@@ -7,15 +7,16 @@ package com.kooi.dissertation.syntaxtree;
  * 
  * 
  * @author Kooi
+ * @date 30th January 2019
  *
  */
-public class ASTNode {
+public abstract class ASTNode implements Node{
 	
 	
 	//fields
-	private String value;
-	private ASTNode left;
-	private ASTNode right;
+	protected String value;
+	protected Node left;
+	protected Node right;
 	
 	
 	//constructors
@@ -24,14 +25,16 @@ public class ASTNode {
 		left = null;
 		right = null;
 	}
-	public ASTNode(String value,ASTNode left,ASTNode right) {
+	public ASTNode(String value,Node left,Node right) {
 		this.value = value;
-		left = left;
-		right = right;
+		this.left = left;
+		this.right = right;
 	}
 	
+
+	
 	//getters and setters
-	public void setRight(ASTNode right) {
+	public void setRight(Node right) {
 		this.right = right;
 	}
 	
@@ -41,51 +44,20 @@ public class ASTNode {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	public ASTNode getLeft() {
+	public Node getLeft() {
 		return left;
 	}
-	public void setLeft(ASTNode left) {
+	public void setLeft(Node left) {
 		this.left = left;
 	}
-	public ASTNode getRight() {
+	public Node getRight() {
 		return right;
 	}
 	
 	//overriding hashcode and equals. These will be used for 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((left == null) ? 0 : left.hashCode());
-		result = prime * result + ((right == null) ? 0 : right.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
+	public abstract int hashCode();
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ASTNode other = (ASTNode) obj;
-		if (left == null) {
-			if (other.left != null)
-				return false;
-		} else if (!left.equals(other.left))
-			return false;
-		if (right == null) {
-			if (other.right != null)
-				return false;
-		} else if (!right.equals(other.right))
-			return false;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
-	}
+	public abstract boolean equals(Object obj);
 
 }

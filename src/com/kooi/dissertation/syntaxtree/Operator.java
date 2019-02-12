@@ -13,6 +13,7 @@ public interface Operator {
 	
 	
 	public int comparePrecedence(Operator op);
+	public DataType getReturnType();
 	public int getPrecedence();
 	public String getSymbol();
 
