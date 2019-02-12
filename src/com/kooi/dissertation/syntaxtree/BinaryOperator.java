@@ -2,54 +2,35 @@ package com.kooi.dissertation.syntaxtree;
 
 /**
  * 
- * A class for binary operator. This class implements the operator interface. 
+ * A class for binary operator. This class extends the abstractoperator class. 
  * 
  * @author Kooi
+ * @date 9th January 2019
  *
  */
-public class BinaryOperator implements Operator {
+public class BinaryOperator extends AbstractOperator {
 	
-	//fields
-	private String symbol;
-	private int precedence;
-	
-	//constructors
-	public BinaryOperator(String symbol, int precedence) {
-		
-		if(symbol == null || precedence < 0) {
-			throw new IllegalArgumentException();
-		}
-		this.symbol = symbol;
-		this.precedence = precedence;
-	}	
-	public BinaryOperator(String symbol) {
-		if(symbol == null)
-			throw new IllegalArgumentException();
-		this.precedence  = 0;
-		this.symbol = symbol;
-	}
+	private DataType lhsType;
+	private DataType rhsType;
 	 
-
-	@Override
-	public int comparePrecedence(Operator op) {
-		// TODO Auto-generated method stub
-		return 0;
+	//Constructor
+	public BinaryOperator(String symbol, int precedence,DataType rhs,DataType lhs,DataType returnType) {
+		super(symbol, precedence,returnType);
+		lhsType = lhs;
+		rhsType = rhs;
 	}
 	
-	@Override
-	/**
-	 * Method to get the precedence of the operator
-	 */
-	public int getPrecedence() {
-		return this.precedence;
-	}
 
 	@Override
-	/**
-	 * Method to get the symbol of the operator
-	 */
-	public String getSymbol() {
-		return this.symbol;
+	public int comparePrecedence(Operator o) {
+		if(o instanceof BinaryOperator) {
+            return this.precedence > o.getPrecedence() ? 1 :
+                    o.getPrecedence() == this.precedence ? 0 : -1;
+        } else {
+        	//compare precedence using the other operator, 
+            return -o.comparePrecedence(this); //negate cause from the other side
+        }
 	}
+
 
 }
