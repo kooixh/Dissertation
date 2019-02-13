@@ -1,4 +1,4 @@
-package com.kooi.dissertation.syntaxtreetests;
+package com.kooi.dissertation.testing;
 
 import java.util.HashSet;
 import java.util.Set;

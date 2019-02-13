@@ -36,9 +36,11 @@ public class DriverProgram {
 		ASTParser p = new ASTParser(ops,variables);
 
 		try {
-			Node n = p.parseAST("NOT True AND False OR(True AND True)");
+			Node n = p.parseAST("True + False -(True + (False - False)) + True + True");
 			//Node n = p.parseAST("NOT NOT TRUE");
 			prettyPrint(n);
+			
+			//System.out.println(p.toInfix("13 4 + 2 *"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

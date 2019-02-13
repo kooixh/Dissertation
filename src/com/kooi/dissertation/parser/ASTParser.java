@@ -15,6 +15,7 @@ import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
 import com.kooi.dissertation.syntaxtree.Operator;
 import com.kooi.dissertation.syntaxtree.OperatorNode;
+import com.kooi.dissertation.syntaxtree.UnaryOperator;
 import com.kooi.dissertation.syntaxtree.VariableNode;
 
 /**
@@ -35,13 +36,17 @@ public class ASTParser {
 	
 	
 	//constructor
-	public ASTParser(Set<Operator> ops,HashMap<String,DataType> vars) {
+	public ASTParser(Set<Operator> ops,Map<String,DataType> vars) {
 		operators = new HashMap<>();
 		variables = vars;
 		for(Operator o : ops) {
 			operators.put(o.getSymbol(), o);
 		}
-		
+	}
+	
+	public ASTParser(Map<String,Operator> ops,Map<String,DataType> vars) {
+		operators = ops;
+		variables = vars;
 	}
 	
 	/**
@@ -299,6 +304,41 @@ public class ASTParser {
 		return sb.toString();
 		
 		
+	}
+	
+	
+	public String toInfix(String rpn) throws ParseException{
+		
+		
+		StringBuilder sb = new StringBuilder();
+		Stack<String> exprStack = new Stack<>();
+		
+		List<String> tokens = Arrays.asList(rpn.split(" "));
+		
+		for(String s: tokens) {
+			
+			if(!operators.containsKey(s)) { //if not operator
+				exprStack.push(s);
+			}else {
+				
+				//if unary
+				Operator o = operators.get(s);
+				
+				if(o instanceof UnaryOperator) {
+					String next = "("+o.getSymbol()+exprStack.pop()+")";
+					exprStack.push(next);
+				}else {
+					String r = exprStack.pop();
+					String l = exprStack.pop();
+					String next = "("+l+o.getSymbol()+r+")";
+					exprStack.push(next);
+				}
+				
+			}
+		}
+		
+		return exprStack.pop();
+	
 	}
 	
 	/**

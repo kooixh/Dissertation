@@ -1,4 +1,4 @@
-package com.kooi.dissertation.parsertest;
+package com.kooi.dissertation.testing;
 
 import static org.junit.Assert.*;
 
@@ -46,10 +46,6 @@ public class ParserTest {
 		
 		parser = new ASTParser(ops,variables);
 	}
-	
-
-
-	
 	
 	
 	 //The suite of tests below test the split string method in the ASTParser class 
@@ -424,7 +420,6 @@ public class ParserTest {
 		String expectedPostFix = "True True ! ! +";
 		assertEquals(expectedPostFix,parser.postOrderTreverse(astRoot));
 	}
-	
 	
 	
 
