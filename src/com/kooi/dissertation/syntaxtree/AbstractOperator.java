@@ -20,12 +20,7 @@ public abstract class AbstractOperator implements Operator {
 	
 	
 	//constructor
-	protected AbstractOperator(String symbol, int precedence) {
-		this.symbol = symbol;
-		this.precedence = precedence;
-		this.returnType = DataType.VOID;
-	}
-	
+
 	protected AbstractOperator(String symbol, int precedence,DataType returnType) {
 		this.symbol = symbol;
 		this.precedence = precedence;

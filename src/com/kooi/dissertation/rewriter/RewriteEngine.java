@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.kooi.dissertation.parser.ASTParser;
+import com.kooi.dissertation.parser.Context;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
@@ -24,18 +25,13 @@ public class RewriteEngine {
 	
 	
 	private Set<RewriteRule> rules;
-	private Map<String,DataType> variables;
-	private Map<String,Operator> operators;
+	private Context context;
 	private ASTParser parser;
 	
 	
-	public RewriteEngine(Set<RewriteRule> rules, Set<Operator> ops, Map<String,DataType> vars) {
-		operators = new HashMap<>();
-		this.variables = vars;
-		for(Operator o : ops) {
-			operators.put(o.getSymbol(), o);
-		}
-		parser = new ASTParser(ops,variables);
+	public RewriteEngine(Set<RewriteRule> rules, Context context) {
+		this.context = context;
+		parser = new ASTParser(context);
 		this.rules = rules;		
 	}
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.kooi.dissertation.parser.ASTParser;
+import com.kooi.dissertation.parser.Context;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
@@ -19,21 +20,23 @@ public class DriverProgram {
 	public static void main(String args[]) {
 		
 		Set<Operator> ops = new HashSet<>();
-		ops.add(new BinaryOperator("+",2,DataType.INT,DataType.INT,DataType.INT));
-		ops.add(new BinaryOperator("-",2,DataType.INT,DataType.INT,DataType.INT));
-		ops.add(new BinaryOperator("*",3,DataType.INT,DataType.INT,DataType.INT));
-		ops.add(new BinaryOperator("/",3,DataType.INT,DataType.INT,DataType.INT));
-		ops.add(new BinaryOperator("AND",1,DataType.BOOLEAN,DataType.BOOLEAN,DataType.BOOLEAN));
-		ops.add(new BinaryOperator("OR",1,DataType.BOOLEAN,DataType.BOOLEAN,DataType.BOOLEAN));
-		ops.add(new UnaryOperator("NOT",1,DataType.BOOLEAN,DataType.BOOLEAN));
-		ops.add(new UnaryOperator("!",1,DataType.INT,DataType.INT));
-		ops.add(new UnaryOperator("succ",2,DataType.INT,DataType.INT));
+		ops.add(new BinaryOperator("+",2,DataType.INT));
+		ops.add(new BinaryOperator("-",2,DataType.INT));
+		ops.add(new BinaryOperator("*",3,DataType.INT));
+		ops.add(new BinaryOperator("/",3,DataType.INT));
+		ops.add(new BinaryOperator("AND",1,DataType.BOOLEAN));
+		ops.add(new BinaryOperator("OR",1,DataType.BOOLEAN));
+		ops.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
+		ops.add(new UnaryOperator("!",1,DataType.INT));
+		ops.add(new UnaryOperator("succ",2,DataType.INT));
 		
 		HashMap<String,DataType> variables = new HashMap<>();
 		variables.put("x",DataType.INT);
 		variables.put("y",DataType.INT);
 		
-		ASTParser p = new ASTParser(ops,variables);
+		Context c = new Context(ops,variables);
+		
+		ASTParser p = new ASTParser(c);
 
 		try {
 			Node n = p.parseAST("True + False -(True + (False - False)) + True + True");
@@ -71,7 +74,7 @@ public class DriverProgram {
 	                    next.add(null);
 	                    next.add(null);
 	                } else {
-	                    String aa = n.getValue();
+	                    String aa = n.toString();
 	                    line.add(aa);
 	                    if (aa.length() > widest) widest = aa.length();
 

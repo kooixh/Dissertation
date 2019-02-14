@@ -10,14 +10,10 @@ package com.kooi.dissertation.syntaxtree;
  */
 public class BinaryOperator extends AbstractOperator {
 	
-	private DataType lhsType;
-	private DataType rhsType;
-	 
 	//Constructor
-	public BinaryOperator(String symbol, int precedence,DataType rhs,DataType lhs,DataType returnType) {
+	public BinaryOperator(String symbol, int precedence,DataType returnType) {
 		super(symbol, precedence,returnType);
-		lhsType = lhs;
-		rhsType = rhs;
+
 	}
 	
 

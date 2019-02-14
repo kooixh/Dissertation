@@ -31,23 +31,16 @@ import com.kooi.dissertation.syntaxtree.VariableNode;
 public class ASTParser {
 	
 	//fields
-	private Map<String,Operator> operators; //the operators
-	private Map<String,DataType> variables; //variable names and their type
-	
+	private Context context;
 	
 	//constructor
-	public ASTParser(Set<Operator> ops,Map<String,DataType> vars) {
-		operators = new HashMap<>();
-		variables = vars;
-		for(Operator o : ops) {
-			operators.put(o.getSymbol(), o);
-		}
+	public ASTParser(Context context) {
+		this.context = context;
 	}
 	
-	public ASTParser(Map<String,Operator> ops,Map<String,DataType> vars) {
-		operators = ops;
-		variables = vars;
-	}
+	
+	
+
 	
 	/**
 	 * 
@@ -91,8 +84,8 @@ public class ASTParser {
 			left = n.pop();
 		
 		
-		if(operators.keySet().contains(s)) {
-			Operator o = operators.get(s);
+		if(context.isOperator(s)) {
+			Operator o = context.getOperator(s);
 			if(o instanceof BinaryOperator)
 				n.push(new OperatorNode(s,left,right,o.getReturnType()));
 			else {
@@ -103,8 +96,8 @@ public class ASTParser {
 				n.push(new OperatorNode(s,null,right,o.getReturnType()));
 			}
 		}	
-		else if(variables.containsKey(s))
-			n.push(new VariableNode(s,left,right,variables.get(s)));
+		else if(context.isVariable(s))
+			n.push(new VariableNode(s,left,right,context.getVariable(s)));
 		else
 			n.push(new ConstantNode(s,left,right));
 	}
@@ -159,12 +152,12 @@ public class ASTParser {
 
 			}else {
 				
-				if(operators.containsKey(s)) {
+				if(context.isOperator(s)) {
 
-					Operator current = operators.get(s);
+					Operator current = context.getOperator(s);
 
 					while(!opStack.isEmpty()) {
-						Operator last = operators.get(opStack.peek());
+						Operator last = context.getOperator(opStack.peek());
 
 						//if the last op is opening parenthesis
 						if(last == null)
@@ -182,8 +175,8 @@ public class ASTParser {
 					opStack.push(s);
 
 				}else {
-					if(variables.containsKey(s))
-						nodes.push(new VariableNode(s,null,null,variables.get(s)));
+					if(context.isVariable(s))
+						nodes.push(new VariableNode(s,null,null,context.getVariable(s)));
 					else
 						nodes.push(new ConstantNode(s,null,null));
 				}
@@ -256,12 +249,12 @@ public class ASTParser {
 				
 			}else {
 				
-				if(operators.containsKey(s)) {
+				if(context.isOperator(s)) {
 					
-					Operator current = operators.get(s);
+					Operator current = context.getOperator(s);
 					
 					while(!opStack.isEmpty()) {
-						Operator last = operators.get(opStack.peek());
+						Operator last = context.getOperator(opStack.peek());
 						
 						//if the last op is opening parenthesis
 						if(last == null)
@@ -317,12 +310,12 @@ public class ASTParser {
 		
 		for(String s: tokens) {
 			
-			if(!operators.containsKey(s)) { //if not operator
+			if(!context.isOperator(s)) { //if not operator
 				exprStack.push(s);
 			}else {
 				
 				//if unary
-				Operator o = operators.get(s);
+				Operator o = context.getOperator(s);
 				
 				if(o instanceof UnaryOperator) {
 					String next = "("+o.getSymbol()+exprStack.pop()+")";
@@ -359,7 +352,7 @@ public class ASTParser {
 		//build the regex
 		StringBuilder regex = new StringBuilder();
 		
-		for(String c: operators.keySet()) {
+		for(String c: context.getOperatorSet()) {
 			if(isMetaCharacter(c))
 				regex.append("(\\"+c+")|"); //escape the special character
 			else

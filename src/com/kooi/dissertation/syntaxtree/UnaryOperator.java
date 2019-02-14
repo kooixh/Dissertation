@@ -12,13 +12,11 @@ package com.kooi.dissertation.syntaxtree;
 public class UnaryOperator extends AbstractOperator {
 	
 	
-	private DataType operandType;
 	
 	//constructor
 
-	public UnaryOperator(String symbol, int precedence,DataType operandType,DataType returnType) {
+	public UnaryOperator(String symbol, int precedence,DataType returnType) {
 		super(symbol, precedence,returnType);
-		this.operandType = operandType;
 	}
 
 	@Override
