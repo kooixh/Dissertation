@@ -10,13 +10,15 @@ package com.kooi.dissertation.syntaxtree;
  * @date 30th January 2019
  *
  */
-public abstract class ASTNode implements Node{
+public class ASTNode implements Node{
 	
 	
 	//fields
 	protected String value;
 	protected Node left;
 	protected Node right;
+	protected DataType type;
+	protected NodeType nodeType;
 	
 	
 	//constructors
@@ -25,14 +27,36 @@ public abstract class ASTNode implements Node{
 		left = null;
 		right = null;
 	}
-	public ASTNode(String value,Node left,Node right) {
+	public ASTNode(String value,Node left,Node right,DataType type,NodeType nodeType) {
 		this.value = value;
 		this.left = left;
 		this.right = right;
+		this.type = type;
+		this.nodeType = nodeType;
+	}
+	
+	public ASTNode(String value,DataType type,NodeType nodeType) {
+		this.value = value;
+		this.type = type;
+		this.nodeType = nodeType;
+		left = null;
+		right = null;
 	}
 	
 
 	
+	public DataType getType() {
+		return type;
+	}
+	public void setType(DataType type) {
+		this.type = type;
+	}
+	public NodeType getNodeType() {
+		return nodeType;
+	}
+	public void setNodeType(NodeType nodeType) {
+		this.nodeType = nodeType;
+	}
 	//getters and setters
 	public void setRight(Node right) {
 		this.right = right;
@@ -53,6 +77,7 @@ public abstract class ASTNode implements Node{
 	public Node getRight() {
 		return right;
 	}
+	
 	
 	@Override
 	public int hashCode() {
@@ -89,5 +114,11 @@ public abstract class ASTNode implements Node{
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getValue()+"("+this.getNodeType()+"):"+this.getType();
+	}
+
 
 }

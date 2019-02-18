@@ -10,7 +10,7 @@ import com.kooi.dissertation.syntaxtree.Operator;
 /**
  * 
  * This class is use to represent a context. A context is the set of variables and operators
- * used to perform parsing.
+ * used to perform parsing and rewriting.
  * 
  * @author Kooi
  * @date 14 February 2019

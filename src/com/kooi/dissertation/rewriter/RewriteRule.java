@@ -5,7 +5,7 @@ import com.kooi.dissertation.syntaxtree.Node;
 /**
  * 
  * This class represents a rewrite rule. A rule is made up of two terms. Here the 
- * terms are fields with the root of their respecitive syntax tree.
+ * terms are fields with the root of their respective syntax tree.
  * 
  * 
  * @author Kooi

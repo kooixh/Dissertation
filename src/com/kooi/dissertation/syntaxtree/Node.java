@@ -12,6 +12,8 @@ package com.kooi.dissertation.syntaxtree;
 public interface Node {
 	
 	String getValue();
+	public DataType getType();
+	public NodeType getNodeType();
 	Node getRight();
 	Node getLeft();
 	public int hashCode();

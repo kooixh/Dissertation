@@ -24,6 +24,7 @@ public class RewriteTest {
 	
 	static RewriteEngine r;
 	static RewriteEngine rB;
+	
 	static ASTParser p;
 	static ASTParser boolP;
 	@BeforeClass
@@ -141,6 +142,24 @@ public class RewriteTest {
 		String input = "succ(succ(0)) + succ(0)";
 		String output = r.rewritePostfix(input);
 		String expected = "0 succ succ succ";
+		
+		assertEquals(expected,output);
+	}
+	@Test
+	public void testRewrite7() {
+		
+		String input = "True AND False OR ((True AND TRUE)OR TRUE AND False) OR False";
+		String output = rB.rewritePostfix(input);
+		String expected = "False";
+		
+		assertEquals(expected,output);
+	}
+	@Test
+	public void testRewrite8() {
+		
+		String input = "True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))";
+		String output = rB.rewritePostfix(input);
+		String expected = "True";
 		
 		assertEquals(expected,output);
 	}

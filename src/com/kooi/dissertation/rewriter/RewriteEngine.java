@@ -9,10 +9,9 @@ import java.util.Set;
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.syntaxtree.ASTNode;
-import com.kooi.dissertation.syntaxtree.ConstantNode;
 import com.kooi.dissertation.syntaxtree.Node;
-import com.kooi.dissertation.syntaxtree.OperatorNode;
-import com.kooi.dissertation.syntaxtree.VariableNode;
+import com.kooi.dissertation.syntaxtree.NodeType;
+
 
 /**
  * 
@@ -123,19 +122,19 @@ public class RewriteEngine {
 		}
 		
 		//if is variable then just need to match type and add to var list. 
-		if(rule instanceof VariableNode) {
+		if(rule.getNodeType() ==NodeType.VARIABLE) {
 			//if variable appeared before, check if current match prev
 			if(vars.containsKey(rule.getValue())) {
 				return term.equals(vars.get(rule.getValue()));
 			}else {
 				//if variable type is compatible with operator return type
-				if(term instanceof OperatorNode && ((OperatorNode) term).getReturnType() == ((VariableNode)rule).getType()) {
+				if(term.getNodeType()== NodeType.OPERATOR && term.getType() == rule.getType()) {
 					vars.put(rule.getValue(), term); 
 					return true;
-				}else if(term instanceof ConstantNode) {
+				}else if(term.getNodeType() == NodeType.CONSTANT) {
 					vars.put(rule.getValue(), term); 
 					return true;
-				}else if(term instanceof VariableNode && ((VariableNode)term).getType() == ((VariableNode)rule).getType()) {
+				}else if(term.getNodeType() == NodeType.VARIABLE && term.getType() == rule.getType()) {
 					vars.put(rule.getValue(), term); //replace with a copy of term 
 					return true;
 				}	
@@ -157,6 +156,8 @@ public class RewriteEngine {
 		
 		//swap the term to be the rule
 		((ASTNode)term).setValue(rule.getValue());
+		((ASTNode)term).setNodeType(rule.getNodeType());
+		((ASTNode)term).setType(rule.getType());
 		((ASTNode)term).setRight(copy(rule.getRight()));
 		((ASTNode)term).setLeft(copy(rule.getLeft()));
 		//fill in variable
@@ -177,6 +178,8 @@ public class RewriteEngine {
 			
 			//set the respective node
 			((ASTNode)m).setValue(vars.get(initialValue).getValue());
+			((ASTNode)m).setNodeType(vars.get(initialValue).getNodeType());
+			((ASTNode)m).setType(vars.get(initialValue).getType());
 			((ASTNode)m).setRight(copy(vars.get(initialValue).getRight()));
 			((ASTNode)m).setLeft(copy(vars.get(initialValue).getLeft()));
 			
@@ -192,14 +195,14 @@ public class RewriteEngine {
 		
 		if(n == null)
 			return null;
-		Node newNode;
+		Node newNode = new ASTNode(n.getValue(),null,null,n.getType(),n.getNodeType());
 		
-		if(n instanceof VariableNode)
-			newNode = new VariableNode(n.getValue(),((VariableNode)n).getType());
-		else if(n instanceof OperatorNode)
-			newNode = new OperatorNode(n.getValue(),((OperatorNode)n).getReturnType());
-		else
-			newNode = new ConstantNode(n.getValue());
+		//if(n instanceof VariableNode)
+		//	newNode = new VariableNode(n.getValue(),((VariableNode)n).getType());
+		//else if(n instanceof OperatorNode)
+		//	newNode = new OperatorNode(n.getValue(),((OperatorNode)n).getReturnType());
+		//else
+			//newNode = new ConstantNode(n.getValue());
 		
 		((ASTNode)newNode).setLeft(copy(n.getLeft()));
 		((ASTNode)newNode).setRight(copy(n.getRight()));

@@ -9,10 +9,9 @@ import com.kooi.dissertation.syntaxtree.ASTNode;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
+import com.kooi.dissertation.syntaxtree.NodeType;
 import com.kooi.dissertation.syntaxtree.Operator;
-import com.kooi.dissertation.syntaxtree.OperatorNode;
 import com.kooi.dissertation.syntaxtree.UnaryOperator;
-import com.kooi.dissertation.syntaxtree.VariableNode;
 
 import junit.framework.TestCase;
 
@@ -34,68 +33,25 @@ public class SyntaxTreeUnitTests extends TestCase {
 	 * 
 	 */	
 	
-	@Test
-	public void testHashCodeOperatorNode() {
-		
-		//create node 1
-		Node node1 = new OperatorNode("+",DataType.INT);
-		Node node1_left = new VariableNode("x",DataType.INT);
-		ASTNode node1_right = new VariableNode("y",DataType.INT);
-		((OperatorNode)node1).setLeft(node1_left);
-		((OperatorNode)node1).setRight(node1_right);
-
-		
-		
-		//create node 2 with same values as node one but different objects
-		Node node2 = new OperatorNode("+",DataType.INT);
-		Node node2_left = new VariableNode("x",DataType.INT);
-		ASTNode node2_right = new VariableNode("y",DataType.INT);
-		((OperatorNode)node2).setLeft(node2_left);
-		((OperatorNode)node2).setRight(node2_right);
-		
-		assertNotSame(node1,node2);
-		assertEquals(node1.hashCode(),node2.hashCode());
-	}
-	
-	@Test
-	public void testHashCodeDifferentTwoNodes() {
-		
-		//create node 1
-		Node node1 = new OperatorNode("+",DataType.INT);
-		Node node1_left = new VariableNode("x",DataType.INT);
-		ASTNode node1_right = new VariableNode("y",DataType.INT);
-		((OperatorNode)node1).setLeft(node1_left);
-		((OperatorNode)node1).setRight(node1_right);
-
-		
-		//create node 2 with different values as node one but different objects
-		Node node2 = new VariableNode("y",DataType.INT);
-		Node node2_left = new VariableNode("y left",DataType.INT);
-		Node node2_right = new VariableNode("y right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
-		
-		assertNotSame(node1,node2);
-		assertFalse("Same hashcode", node1.hashCode()==node2.hashCode() );
-	}
 	
 	@Test
 	public void testEquals() {
 		
 		//create node 1
-		Node node1 = new VariableNode("x",DataType.INT);
-		Node node1_left = new VariableNode("x left",DataType.INT);
-		Node node1_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node1).setLeft(node1_left);
-		((VariableNode)node1).setRight(node1_right);
+		Node node1 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node1_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		ASTNode node1_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node1).setLeft(node1_left);
+		((ASTNode)node1).setRight(node1_right);
+
 		
 		
 		//create node 2 with same values as node one but different objects
-		Node node2 = new VariableNode("x",DataType.INT);
-		Node node2_left = new VariableNode("x left",DataType.INT);
-		Node node2_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
+		Node node2 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node2_left =  new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		ASTNode node2_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node2).setLeft(node2_left);
+		((ASTNode)node2).setRight(node2_right);
 		
 		assertNotSame(node1,node2);
 		assertEquals(node1.hashCode(),node2.hashCode());
@@ -109,22 +65,21 @@ public class SyntaxTreeUnitTests extends TestCase {
 	public void testEquals2() {
 		
 		
-		
 		//create node 1
-		Node node1 = new VariableNode("x",DataType.INT);
-		Node node1_left = new VariableNode("x left",DataType.INT);
-		Node node1_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node1).setLeft(node1_left);
-		((VariableNode)node1).setRight(node1_right);
+		Node node1 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node1_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		ASTNode node1_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node1).setLeft(node1_left);
+		((ASTNode)node1).setRight(node1_right);
 		
-		Node node1_root = new OperatorNode("x_root",null,node1,DataType.INT);
+		Node node1_root = new ASTNode("+_root",null,node1,DataType.INT,NodeType.OPERATOR);
 		
 		//create node 2 with same values as node one but different objects
-		Node node2 = new VariableNode("x",DataType.INT);
-		Node node2_left = new VariableNode("x left",DataType.INT);
-		Node node2_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
+		Node node2 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node2_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		Node node2_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node2).setLeft(node2_left);
+		((ASTNode)node2).setRight(node2_right);
 
 		assertEquals(node1_root.getRight(),node2);
 	}
@@ -133,18 +88,21 @@ public class SyntaxTreeUnitTests extends TestCase {
 	public void testNotEquals() {
 		
 		//create node 1
-		Node node1 = new OperatorNode("+",DataType.INT);
-		Node node1_left = new VariableNode("x",DataType.INT);
-		ASTNode node1_right = new VariableNode("y",DataType.INT);
-		((OperatorNode)node1).setLeft(node1_left);
-		((OperatorNode)node1).setRight(node1_right);
+		Node node1 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node1_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		ASTNode node1_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node1).setLeft(node1_left);
+		((ASTNode)node1).setRight(node1_right);
+		
+		Node node1_root = new ASTNode("+_root",null,node1,DataType.INT,NodeType.OPERATOR);
 		
 		//create node 2 with same values as node one but different objects
-		Node node2 = new VariableNode("x",DataType.INT);
-		Node node2_left = new VariableNode("y left",DataType.INT);
-		Node node2_right = new VariableNode("y right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
+		Node node2 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node2_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		Node node2_right = new ASTNode("z",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node2).setLeft(node2_left);
+		((ASTNode)node2).setRight(node2_right);
+;
 		
 		assertNotSame(node1,node2);
 		assertFalse(node1.equals(node2));
@@ -156,51 +114,27 @@ public class SyntaxTreeUnitTests extends TestCase {
 		
 		
 		//create node 1
-		Node node1 = new VariableNode("x",DataType.INT);
-		Node node1_left = new VariableNode("x left",DataType.INT);
-		Node node1_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node1).setLeft(node1_left);
-		((VariableNode)node1).setRight(node1_right);
+		Node node1 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node1_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		ASTNode node1_right = new ASTNode("y",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node1).setLeft(node1_left);
+		((ASTNode)node1).setRight(node1_right);
 		
-		Node node1_root = new OperatorNode("x_root",null,node1,DataType.INT);
+		Node node1_root = new ASTNode("+_root",null,node1,DataType.INT,NodeType.OPERATOR);
 		
 		//create node 2 with same values as node one but different objects
-		Node node2 = new VariableNode("x",DataType.INT);
-		Node node2_left = new VariableNode("x left",DataType.INT);
-		Node node2_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
-
+		Node node2 = new ASTNode("+",DataType.INT,NodeType.OPERATOR);
+		Node node2_left = new ASTNode("x",DataType.INT,NodeType.VARIABLE);
+		Node node2_right = new ASTNode("z",DataType.INT,NodeType.VARIABLE);
+		((ASTNode)node2).setLeft(node2_left);
+		((ASTNode)node2).setRight(node2_right);
+;
+		
+		assertNotSame(node1,node2);
 		assertFalse(node1_root.equals(node2));
 	}
 	
-	
-	
-	@Test
-	public void testHashSetImplementability() {
-		//create node 1
-		Node node1 = new VariableNode("x",DataType.INT);
-		Node node1_left = new VariableNode("x left",DataType.INT);
-		Node node1_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node1).setLeft(node1_left);
-		((VariableNode)node1).setRight(node1_right);
 		
-		Set<Node> s = new HashSet<>();
-		
-		s.add(node1);
-		
-		//create node 2 with same values as node one but different objects
-		Node node2 = new VariableNode("x",DataType.INT);
-		Node node2_left = new VariableNode("x left",DataType.INT);
-		Node node2_right = new VariableNode("x right",DataType.INT);
-		((VariableNode)node2).setLeft(node2_left);
-		((VariableNode)node2).setRight(node2_right);
-		
-		
-		assert(s.contains(node2));
-	}
-	
-	
 	@Test
 	public void testCompareBinaryBinary1() {
 		

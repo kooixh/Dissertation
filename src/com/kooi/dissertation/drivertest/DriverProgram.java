@@ -51,11 +51,13 @@ public class DriverProgram {
 		try {
 			
 			String s = "True AND False OR(True AND (False OR False)) AND True AND True";
-			System.out.println("Expression: "+s);
+			//System.out.println("Expression: "+s);
 			
-			System.out.println("\n\nRewrite using rules: "+r.rewriteInfix(s));
-			Node n = boolP.parseAST(s);
+			//System.out.println("\n\nRewrite using rules: "+r.rewriteInfix(s));
+			Node n = boolP.parseAST("True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))");
 			//Node n = p.parseAST("NOT NOT TRUE");
+			prettyPrint(n);	
+			//n = r.rewrite("True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))");
 			//prettyPrint(n);	
 			
 			//System.out.println(p.toInfix("13 4 + 2 *"));
@@ -65,7 +67,7 @@ public class DriverProgram {
 	}
 	
 	
-	 public static void prettyPrint(Node root)
+	public static void prettyPrint(Node root)
 	    {
 	        List<List<String>> lines = new ArrayList<List<String>>();
 

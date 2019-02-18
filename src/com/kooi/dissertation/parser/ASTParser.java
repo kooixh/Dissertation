@@ -10,19 +10,18 @@ import java.util.Stack;
 
 import com.kooi.dissertation.syntaxtree.ASTNode;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
-import com.kooi.dissertation.syntaxtree.ConstantNode;
 import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
+import com.kooi.dissertation.syntaxtree.NodeType;
 import com.kooi.dissertation.syntaxtree.Operator;
-import com.kooi.dissertation.syntaxtree.OperatorNode;
 import com.kooi.dissertation.syntaxtree.UnaryOperator;
-import com.kooi.dissertation.syntaxtree.VariableNode;
 
 /**
  * 
- * This is a parser that parse infix equations to post-fix and AST.
+ * This is a parser that parse infix equations to post-fix and AST. Parser contains
+ * methods to convert traverse AST and convert post-fix to infix
  * 
- * The parser requires the set of operations.
+ * The parser requires a context.
  * 
  * @author Kooi
  * @date 4th Febuary 2019
@@ -87,19 +86,19 @@ public class ASTParser {
 		if(context.isOperator(s)) {
 			Operator o = context.getOperator(s);
 			if(o instanceof BinaryOperator)
-				n.push(new OperatorNode(s,left,right,o.getReturnType()));
+				n.push(new ASTNode(s,left,right,o.getReturnType(),NodeType.OPERATOR));
 			else {
 				
 				//if it is a unary operator then just pop one operands
 				if(left != null)
 					n.push(left);
-				n.push(new OperatorNode(s,null,right,o.getReturnType()));
+				n.push(new ASTNode(s,null,right,o.getReturnType(),NodeType.OPERATOR));
 			}
 		}	
 		else if(context.isVariable(s))
-			n.push(new VariableNode(s,left,right,context.getVariable(s)));
+			n.push(new ASTNode(s,left,right,context.getVariable(s),NodeType.VARIABLE));
 		else
-			n.push(new ConstantNode(s,left,right));
+			n.push(new ASTNode(s,left,right,DataType.CONST,NodeType.VARIABLE));
 	}
 	
 	/**
@@ -176,9 +175,9 @@ public class ASTParser {
 
 				}else {
 					if(context.isVariable(s))
-						nodes.push(new VariableNode(s,null,null,context.getVariable(s)));
+						nodes.push(new ASTNode(s,null,null,context.getVariable(s),NodeType.VARIABLE));
 					else
-						nodes.push(new ConstantNode(s,null,null));
+						nodes.push(new ASTNode(s,null,null,DataType.CONST,NodeType.CONSTANT));
 				}
 			}
 
