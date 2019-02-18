@@ -45,7 +45,7 @@ public class DriverProgram {
 		rulesB.add(fB.getRewriteRule("B OR True", "True", "identity"));
 		rulesB.add(fB.getRewriteRule("False OR False", "False", "identity"));
 		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
-		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND- identity"));
+		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND-identity"));
 
 		RewriteEngine r = new RewriteEngine(rulesB,boolP);
 		try {
@@ -56,12 +56,7 @@ public class DriverProgram {
 			System.out.println("\n\nRewrite using rules: "+r.rewriteInfix(s));
 			Node n = boolP.parseAST(s);
 			//Node n = p.parseAST("NOT NOT TRUE");
-			//prettyPrint(n);
-			
-			
-			
-			
-			
+			//prettyPrint(n);	
 			
 			//System.out.println(p.toInfix("13 4 + 2 *"));
 		} catch (ParseException e) {

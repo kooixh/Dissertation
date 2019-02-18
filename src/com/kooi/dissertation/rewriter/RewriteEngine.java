@@ -59,40 +59,23 @@ public class RewriteEngine {
 	 * @return the normal form of input in post fix notation
 	 */
 	public String rewritePostfix(String input) {
+					
+		return parser.postOrderTreverse(rewrite(input));
 		
-		
-	
-		try {
-			Node root = parser.parseAST(input);
-			boolean flag = false;
-			
-			do {
-				flag = search(root,root);
-			}while(flag);
-			
-			
-			return parser.postOrderTreverse(root);
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
 	}
 	
 	/**
 	 * 
-	 * Run the rewrite algorithm and return the root node
+	 * This is the main rewrite function. It takes a string in infix form and return the 
+	 * syntax tree node of the result.
 	 * 
-	 * @param infix
-	 * @return
+	 * @param infix expression to rewrite in infix form
+	 * @return root Node of the syntax tree of the result
 	 */
-	public Node rewriteNode(String infix) {
+	public Node rewrite(String infix) {
 		try {
 			Node root = parser.parseAST(infix);
-			boolean flag = false;
-			
-			
+			boolean flag = false;  //if flag is false then cannot be rewritten any further
 			
 			do {
 				flag = search(root,root);
@@ -108,7 +91,13 @@ public class RewriteEngine {
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * Call the rewrite method and return the result in infix form
+	 * 
+	 * @param infix expression to rewrite in infix string
+	 * @return result after rewrite in infix form
+	 */
 	public String rewriteInfix(String infix) {
 		
 		try {
