@@ -9,6 +9,9 @@ import java.util.Set;
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.Context;
 import com.kooi.dissertation.parser.ParseException;
+import com.kooi.dissertation.rewriter.RewriteEngine;
+import com.kooi.dissertation.rewriter.RewriteRule;
+import com.kooi.dissertation.rewriter.RewriteRuleFactory;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
@@ -19,29 +22,46 @@ public class DriverProgram {
 
 	public static void main(String args[]) {
 		
-		Set<Operator> ops = new HashSet<>();
-		ops.add(new BinaryOperator("+",2,DataType.INT));
-		ops.add(new BinaryOperator("-",2,DataType.INT));
-		ops.add(new BinaryOperator("*",3,DataType.INT));
-		ops.add(new BinaryOperator("/",3,DataType.INT));
-		ops.add(new BinaryOperator("AND",1,DataType.BOOLEAN));
-		ops.add(new BinaryOperator("OR",1,DataType.BOOLEAN));
-		ops.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
-		ops.add(new UnaryOperator("!",1,DataType.INT));
-		ops.add(new UnaryOperator("succ",2,DataType.INT));
+		Set<Operator> opsB = new HashSet<>();
+		opsB.add(new BinaryOperator("AND",2,DataType.BOOLEAN));
+		opsB.add(new BinaryOperator("OR",2,DataType.BOOLEAN));
+		opsB.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
 		
-		HashMap<String,DataType> variables = new HashMap<>();
-		variables.put("x",DataType.INT);
-		variables.put("y",DataType.INT);
+		HashMap<String,DataType> variablesB = new HashMap<>();
+		variablesB.put("T",DataType.BOOLEAN);
+		variablesB.put("F",DataType.BOOLEAN);
+		variablesB.put("B",DataType.BOOLEAN);
 		
-		Context c = new Context(ops,variables);
+		Context cBool = new Context(opsB,variablesB);
+		ASTParser boolP = new ASTParser(cBool);
 		
-		ASTParser p = new ASTParser(c);
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		
+		Set<RewriteRule> rulesB = new HashSet<>();
+		
+		rulesB.add(fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rulesB.add(fB.getRewriteRule("B AND B", "B", "idempotent"));
+		rulesB.add(fB.getRewriteRule("True OR B", "True", "identity"));
+		rulesB.add(fB.getRewriteRule("B OR True", "True", "identity"));
+		rulesB.add(fB.getRewriteRule("False OR False", "False", "identity"));
+		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
+		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND- identity"));
 
+		RewriteEngine r = new RewriteEngine(rulesB,boolP);
 		try {
-			Node n = p.parseAST("True + False -(True + (False - False)) + True + True");
+			
+			String s = "True AND False OR(True AND (False OR False)) AND True AND True";
+			System.out.println("Expression: "+s);
+			
+			System.out.println("\n\nRewrite using rules: "+r.rewriteInfix(s));
+			Node n = boolP.parseAST(s);
 			//Node n = p.parseAST("NOT NOT TRUE");
-			prettyPrint(n);
+			//prettyPrint(n);
+			
+			
+			
+			
+			
 			
 			//System.out.println(p.toInfix("13 4 + 2 *"));
 		} catch (ParseException e) {
