@@ -84,7 +84,9 @@ public class ASTNode implements Node{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((left == null) ? 0 : left.hashCode());
+		result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
 		result = prime * result + ((right == null) ? 0 : right.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -102,10 +104,14 @@ public class ASTNode implements Node{
 				return false;
 		} else if (!left.equals(other.left))
 			return false;
+		if (nodeType != other.nodeType)
+			return false;
 		if (right == null) {
 			if (other.right != null)
 				return false;
 		} else if (!right.equals(other.right))
+			return false;
+		if (type != other.type)
 			return false;
 		if (value == null) {
 			if (other.value != null)

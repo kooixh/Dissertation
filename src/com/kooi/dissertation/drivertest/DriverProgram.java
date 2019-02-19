@@ -57,8 +57,8 @@ public class DriverProgram {
 			Node n = boolP.parseAST("True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))");
 			//Node n = p.parseAST("NOT NOT TRUE");
 			prettyPrint(n);	
-			//n = r.rewrite("True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))");
-			//prettyPrint(n);	
+			n = r.rewrite("True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))");
+			prettyPrint(n);	
 			
 			//System.out.println(p.toInfix("13 4 + 2 *"));
 		} catch (ParseException e) {

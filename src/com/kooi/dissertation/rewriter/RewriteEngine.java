@@ -77,14 +77,13 @@ public class RewriteEngine {
 			boolean flag = false;  //if flag is false then cannot be rewritten any further
 			
 			do {
-				flag = search(root,root);
+				flag = search(root);
 			}while(flag);
-			
-			
+		
 			return root;
 			
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -102,7 +101,7 @@ public class RewriteEngine {
 		try {
 			return parser.toInfix(rewritePostfix(infix));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 			return "";
 		}
@@ -135,7 +134,7 @@ public class RewriteEngine {
 					vars.put(rule.getValue(), term); 
 					return true;
 				}else if(term.getNodeType() == NodeType.VARIABLE && term.getType() == rule.getType()) {
-					vars.put(rule.getValue(), term); //replace with a copy of term 
+					vars.put(rule.getValue(), term); 
 					return true;
 				}	
 				return false;
@@ -195,34 +194,23 @@ public class RewriteEngine {
 		
 		if(n == null)
 			return null;
-		Node newNode = new ASTNode(n.getValue(),null,null,n.getType(),n.getNodeType());
-		
-		//if(n instanceof VariableNode)
-		//	newNode = new VariableNode(n.getValue(),((VariableNode)n).getType());
-		//else if(n instanceof OperatorNode)
-		//	newNode = new OperatorNode(n.getValue(),((OperatorNode)n).getReturnType());
-		//else
-			//newNode = new ConstantNode(n.getValue());
-		
-		((ASTNode)newNode).setLeft(copy(n.getLeft()));
-		((ASTNode)newNode).setRight(copy(n.getRight()));
-		
+		Node newNode = new ASTNode(n.getValue(),copy(n.getLeft()),copy(n.getRight()),n.getType(),n.getNodeType());
 		return newNode;
 		
 	}
 	
 	//use a post-order traversal to search the syntax tree for matching rule
 	//root keeps a reference to the original root so we can swap when we make a copy
-	private boolean search(Node n,Node root) {
+	private boolean search(Node n) {
 		
 		if(n == null)
 			return false;
 		
 		
-		
-		if(search(n.getLeft(),n.getLeft()))
+		//if something is rewritten don't rewrite further
+		if(search(n.getLeft()))
 			return true;
-		if(search(n.getRight(),n.getRight()))
+		if(search(n.getRight()))
 			return true;
 		
 		//try all the possible rule that can be match
@@ -234,12 +222,7 @@ public class RewriteEngine {
 			
 			if(match(n,r.getLhs(),vars)) {
 				substitute(n,r.getRhs(),vars);
-				//if n is copied then update the root referenece
-				if(n != root)
-					root = n;
-					
 				return true;
-				
 			}
 		}
 		return false;
