@@ -72,7 +72,7 @@ public class ASTParser {
 		
 	}
 	
-	//helper method to add a node to the stack of node
+	//helper method to add an operator node to the stack of node
 	private void addNodeToStack(Stack<Node> n, String s) {
 		Node right = null;
 		Node left = null;
@@ -82,8 +82,6 @@ public class ASTParser {
 		if(!n.isEmpty())
 			left = n.pop();
 		
-		
-		if(context.isOperator(s)) {
 			Operator o = context.getOperator(s);
 			if(o instanceof BinaryOperator)
 				n.push(new ASTNode(s,left,right,o.getReturnType(),NodeType.OPERATOR));
@@ -94,11 +92,7 @@ public class ASTParser {
 					n.push(left);
 				n.push(new ASTNode(s,null,right,o.getReturnType(),NodeType.OPERATOR));
 			}
-		}	
-		else if(context.isVariable(s))
-			n.push(new ASTNode(s,left,right,context.getVariable(s),NodeType.VARIABLE));
-		else
-			n.push(new ASTNode(s,left,right,DataType.CONST,NodeType.VARIABLE));
+	
 	}
 	
 	/**
@@ -298,7 +292,14 @@ public class ASTParser {
 		
 	}
 	
-	
+	/**
+	 * 
+	 * This method converts an expression in postfix form to infix
+	 * 
+	 * @param rpn Expression in postfix 
+	 * @return The expression in infix form.
+	 * @throws ParseException
+	 */
 	public String toInfix(String rpn) throws ParseException{
 		
 		
@@ -317,12 +318,12 @@ public class ASTParser {
 				Operator o = context.getOperator(s);
 				
 				if(o instanceof UnaryOperator) {
-					String next = "("+o.getSymbol()+exprStack.pop()+")";
+					String next = "("+o.getSymbol()+" "+exprStack.pop()+")";
 					exprStack.push(next);
 				}else {
 					String r = exprStack.pop();
 					String l = exprStack.pop();
-					String next = "("+l+o.getSymbol()+r+")";
+					String next = "("+l+" "+o.getSymbol()+" "+r+")";
 					exprStack.push(next);
 				}
 				

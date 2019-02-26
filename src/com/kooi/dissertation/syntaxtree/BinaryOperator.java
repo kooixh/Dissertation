@@ -24,7 +24,7 @@ public class BinaryOperator extends AbstractOperator {
                     o.getPrecedence() == this.precedence ? 0 : -1;
         } else {
         	//compare precedence using the other operator, 
-            return -o.comparePrecedence(this); //negate cause from the other side
+            return -1; //negate cause from the other side
         }
 	}
 

@@ -29,7 +29,9 @@ public class RewriteEngine {
 	private Set<RewriteRule> rules;
 	private Map<String,List<RewriteRule>> ruleMap;
 	private ASTParser parser;
+	private List<String> states;	//TODO Change this to object
 	
+	private final static int MAX_ITERATION = 100;
 	
 	public RewriteEngine(Set<RewriteRule> rules, ASTParser parser) {
 		//this.context = context;
@@ -56,10 +58,12 @@ public class RewriteEngine {
 	 * 
 	 * @param input Infix expression string
 	 * @return the normal form of input in post fix notation
+	 * @throws ParseException
+	 * @throws RewriteException
 	 */
-	public String rewritePostfix(String input) {
+	public String rewritePostfix(String input) throws ParseException, RewriteException{
 					
-		return parser.postOrderTreverse(rewrite(input));
+		return parser.postOrderTreverse(rewriteNode(input));
 		
 	}
 	
@@ -70,23 +74,69 @@ public class RewriteEngine {
 	 * 
 	 * @param infix expression to rewrite in infix form
 	 * @return root Node of the syntax tree of the result
+	 * @throws ParseException
+	 * @throws RewriteException
 	 */
-	public Node rewrite(String infix) {
-		try {
+	public Node rewriteNode(String infix) throws ParseException, RewriteException{
+		
+			int c = 0; //total iteration, prevents infinite
+	
 			Node root = parser.parseAST(infix);
 			boolean flag = false;  //if flag is false then cannot be rewritten any further
-			
 			do {
-				flag = search(root);
-			}while(flag);
+				flag = search(root,null);
+				c++;
+			}while(flag && c<MAX_ITERATION);
+			
+			
+			
+			if(c == MAX_ITERATION)
+				throw new RewriteException("Max Itertion reached, possible infinite rewrite");
 		
 			return root;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param infix String of expression to rewrite in infix form
+	 * @return A RewriteResult containing the result of the rewrite
+	 * @throws ParseException
+	 * @throws RewriteException
+	 */
+	public RewriteResult rewrite(String infix) throws ParseException,RewriteException{
+		int c = 0; //total iteration, prevents infinite
+		
+		Node root = parser.parseAST(infix);
+		boolean flag = false;  //if flag is false then cannot be rewritten any further
+		StringBuilder lastRule;
+		List<RewriteStep> steps = new ArrayList<>();
+		
+		do {
+			lastRule = new StringBuilder();
+			flag = search(root,lastRule);
 			
-		} catch (ParseException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
+			
+			//skips the final step 
+			if(flag) {
+				RewriteStep step = new RewriteStep(copy(root),lastRule.toString());
+				steps.add(step); 
+			}
+			
+			c++;
+		}while(flag && c<MAX_ITERATION);
+		
+		
+		
+		if(c == MAX_ITERATION)
+			throw new RewriteException("Max Itertion reached, possible infinite rewrite");
+	
+		return new RewriteResult(infix,steps,root);
+		
+		
+		
 	}
 	
 	/**
@@ -94,17 +144,13 @@ public class RewriteEngine {
 	 * Call the rewrite method and return the result in infix form
 	 * 
 	 * @param infix expression to rewrite in infix string
+	 * @throws RewriteException 
 	 * @return result after rewrite in infix form
 	 */
-	public String rewriteInfix(String infix) {
+	public String rewriteInfix(String infix) throws ParseException,RewriteException {
 		
-		try {
-			return parser.toInfix(rewritePostfix(infix));
-		} catch (ParseException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			return "";
-		}
+		return parser.toInfix(rewritePostfix(infix));
+
 	}
 	
 	
@@ -201,16 +247,16 @@ public class RewriteEngine {
 	
 	//use a post-order traversal to search the syntax tree for matching rule
 	//root keeps a reference to the original root so we can swap when we make a copy
-	private boolean search(Node n) {
+	private boolean search(Node n,StringBuilder rName) {
 		
 		if(n == null)
 			return false;
 		
 		
 		//if something is rewritten don't rewrite further
-		if(search(n.getLeft()))
+		if(search(n.getLeft(),rName))
 			return true;
-		if(search(n.getRight()))
+		if(search(n.getRight(),rName))
 			return true;
 		
 		//try all the possible rule that can be match
@@ -222,6 +268,8 @@ public class RewriteEngine {
 			
 			if(match(n,r.getLhs(),vars)) {
 				substitute(n,r.getRhs(),vars);
+				if(rName != null)
+					rName.append(r.getName());
 				return true;
 			}
 		}

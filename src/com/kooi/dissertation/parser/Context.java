@@ -105,7 +105,12 @@ public class Context {
 		return operators.get(symbol);
 	}
 	
-
+	/**
+	 * 
+	 * This method return all the symbols that are operator.
+	 * 
+	 * @return set of string of all operator symbols
+	 */
 	public Set<String> getOperatorSet(){
 		return operators.keySet();
 	}
