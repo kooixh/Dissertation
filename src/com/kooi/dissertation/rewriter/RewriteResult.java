@@ -12,7 +12,7 @@ import com.kooi.dissertation.syntaxtree.Node;
  * This class is immutable
  * 
  * @author Kooi
- *	@date 21 February 2019 
+ * @date 21 February 2019 
  */
 public final class RewriteResult {
 

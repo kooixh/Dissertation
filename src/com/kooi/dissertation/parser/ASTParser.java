@@ -308,7 +308,8 @@ public class ASTParser {
 		
 		List<String> tokens = Arrays.asList(rpn.split(" "));
 		
-		for(String s: tokens) {
+		for(int i =0;i<tokens.size();i++) {
+			String s = tokens.get(i);
 			
 			if(!context.isOperator(s)) { //if not operator
 				exprStack.push(s);
@@ -323,8 +324,15 @@ public class ASTParser {
 				}else {
 					String r = exprStack.pop();
 					String l = exprStack.pop();
-					String next = "("+l+" "+o.getSymbol()+" "+r+")";
-					exprStack.push(next);
+					
+					//omit the last parenthesis
+					if(i != tokens.size()-1) {
+						String next = "("+l+" "+o.getSymbol()+" "+r+")";
+						exprStack.push(next);
+					}else {
+						String next = l+" "+o.getSymbol()+" "+r;
+						exprStack.push(next);
+					}
 				}
 				
 			}

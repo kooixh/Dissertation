@@ -31,7 +31,7 @@ public class RewriteRuleFactory {
 	 * @param l expression of lhs of rule in infix.
 	 * @param r expression of rhs of rule in infix.
 	 * @param name name of the rule.
-	 * @return a rewrite rule from l's AST ot r's AST
+	 * @return a rewrite rule from l's AST to r's AST
 	 */
 	public RewriteRule getRewriteRule(String l,String r,String name) {
 		
