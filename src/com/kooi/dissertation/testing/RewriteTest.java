@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.kooi.dissertation.parser.ASTParser;
-import com.kooi.dissertation.parser.Context;
+import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.rewriter.RewriteEngine;
 import com.kooi.dissertation.rewriter.RewriteException;
@@ -47,7 +47,7 @@ public class RewriteTest {
 		
 		Set<RewriteRule> rules = new HashSet<>();
 		
-		Context c = new Context(ops,variables);
+		Signature c = new Signature(ops,variables);
 		p = new ASTParser(c);
 		
 		RewriteRuleFactory f = new RewriteRuleFactory(p);
@@ -73,7 +73,7 @@ public class RewriteTest {
 		variablesB.put("F",DataType.BOOLEAN);
 		variablesB.put("B",DataType.BOOLEAN);
 		
-		Context cBool = new Context(opsB,variablesB);
+		Signature cBool = new Signature(opsB,variablesB);
 		boolP = new ASTParser(cBool);
 		
 		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
@@ -95,7 +95,7 @@ public class RewriteTest {
 		
 		Set<RewriteRule> rulesInfinite = new HashSet<>();
 		
-		Context cInf = new Context(ops,variables);
+		Signature cInf = new Signature(ops,variables);
 		infP = new ASTParser(cInf);
 		RewriteRuleFactory fI = new RewriteRuleFactory(infP);
 		rulesInfinite.add(fI.getRewriteRule("x+y", "y+x", "inf1"));

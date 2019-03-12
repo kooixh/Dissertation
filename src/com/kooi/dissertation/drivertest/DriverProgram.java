@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.kooi.dissertation.parser.ASTParser;
-import com.kooi.dissertation.parser.Context;
+import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.rewriter.RewriteEngine;
 import com.kooi.dissertation.rewriter.RewriteException;
@@ -42,7 +42,7 @@ public class DriverProgram {
 		
 		Set<RewriteRule> rules = new HashSet<>();
 		
-		Context c = new Context(ops,variables);
+		Signature c = new Signature(ops,variables);
 		ASTParser p = new ASTParser(c);
 		
 		RewriteRuleFactory f = new RewriteRuleFactory(p);
@@ -99,7 +99,7 @@ public class DriverProgram {
 		variablesB.put("F",DataType.BOOLEAN);
 		variablesB.put("B",DataType.BOOLEAN);
 		
-		Context cBool = new Context(opsB,variablesB);
+		Signature cBool = new Signature(opsB,variablesB);
 		ASTParser boolP = new ASTParser(cBool);
 		
 		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
@@ -154,7 +154,7 @@ public class DriverProgram {
 		
 		Set<RewriteRule> rules = new HashSet<>();
 		
-		Context c = new Context(ops,variables);
+		Signature c = new Signature(ops,variables);
 		ASTParser p = new ASTParser(c);
 		
 		RewriteRuleFactory f = new RewriteRuleFactory(p);
@@ -201,7 +201,7 @@ public class DriverProgram {
 		
 		Set<RewriteRule> rules = new HashSet<>();
 		
-		Context c = new Context(ops,variables);
+		Signature c = new Signature(ops,variables);
 		ASTParser p = new ASTParser(c);
 		
 		RewriteRuleFactory f = new RewriteRuleFactory(p);

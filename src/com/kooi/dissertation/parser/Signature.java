@@ -17,7 +17,7 @@ import com.kooi.dissertation.syntaxtree.Operator;
  * 
  *
  */
-public class Context {
+public class Signature {
 	
 	
 	private Map<String,Operator> operators;
@@ -25,7 +25,7 @@ public class Context {
 	
 	
 	//constructors
-	public Context(Set<Operator> ops, Map<String,DataType> vars) {
+	public Signature(Set<Operator> ops, Map<String,DataType> vars) {
 		this.operators = new HashMap<>();
 		
 		for(Operator o:ops) {
@@ -34,9 +34,14 @@ public class Context {
 		this.variables = vars;
 	}
 	
-	public Context(Map<String,Operator> ops, Map<String,DataType> vars) {
+	public Signature(Map<String,Operator> ops, Map<String,DataType> vars) {
 		this.operators =ops;
 		this.variables = vars;
+	}
+	
+	public Signature() {
+		this.operators = new HashMap<String,Operator>();
+		this.variables = new HashMap<String,DataType>();
 	}
 	
 	
@@ -113,6 +118,16 @@ public class Context {
 	 */
 	public Set<String> getOperatorSet(){
 		return operators.keySet();
+	}
+	
+	/**
+	 * 
+	 * This method return all the symbols that are operator.
+	 * 
+	 * @return set of string of all operator symbols
+	 */
+	public Set<String> getVariableSet(){
+		return variables.keySet();
 	}
 
 }

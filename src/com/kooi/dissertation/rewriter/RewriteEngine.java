@@ -29,6 +29,7 @@ public class RewriteEngine {
 	private Set<RewriteRule> rules;
 	private Map<String,List<RewriteRule>> ruleMap;
 	private ASTParser parser;
+
 	
 	private final static int MAX_ITERATION = 100;
 	
@@ -48,6 +49,29 @@ public class RewriteEngine {
 		}
 	}
 	
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param rule
+	 */
+	public void addRule(RewriteRule rule) {
+		rules.add(rule);
+		
+		if(!ruleMap.containsKey(rule.getLhs().getValue())) {
+			ruleMap.put(rule.getLhs().getValue(), new ArrayList<>());
+			
+		}
+		ruleMap.get(rule.getLhs().getValue()).add(rule);
+	}
+	
+	
+	
+	public Set<RewriteRule> getRules(){
+		return this.rules;
+	}
 	
 	/**
 	 * 

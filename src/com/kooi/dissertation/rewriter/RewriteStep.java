@@ -14,7 +14,7 @@ import com.kooi.dissertation.syntaxtree.Node;
 public class RewriteStep {
 	
 	private Node termRoot;
-	private String rule;
+	private String rule; //rule applied to previous step
 	
 	
 	public RewriteStep(Node root, String r) {

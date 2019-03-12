@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.kooi.dissertation.parser.ASTParser;
-import com.kooi.dissertation.parser.Context;
+import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
@@ -46,7 +46,7 @@ public class ParserTest {
 		variables.put("y",DataType.INT);
 		
 		
-		Context c = new Context(ops,variables);
+		Signature c = new Signature(ops,variables);
 		
 		parser = new ASTParser(c);
 	}

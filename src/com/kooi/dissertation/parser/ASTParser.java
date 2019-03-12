@@ -30,10 +30,10 @@ import com.kooi.dissertation.syntaxtree.UnaryOperator;
 public class ASTParser {
 	
 	//fields
-	private Context context;
+	private Signature context;
 	
 	//constructor
-	public ASTParser(Context context) {
+	public ASTParser(Signature context) {
 		this.context = context;
 	}
 	
