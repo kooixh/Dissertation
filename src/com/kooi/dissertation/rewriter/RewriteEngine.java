@@ -9,10 +9,9 @@ import java.util.Set;
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.syntaxtree.ASTNode;
-import com.kooi.dissertation.syntaxtree.ConstantNode;
 import com.kooi.dissertation.syntaxtree.Node;
-import com.kooi.dissertation.syntaxtree.OperatorNode;
-import com.kooi.dissertation.syntaxtree.VariableNode;
+import com.kooi.dissertation.syntaxtree.NodeType;
+
 
 /**
  * 
@@ -30,7 +29,9 @@ public class RewriteEngine {
 	private Set<RewriteRule> rules;
 	private Map<String,List<RewriteRule>> ruleMap;
 	private ASTParser parser;
+
 	
+	private final static int MAX_ITERATION = 100;
 	
 	public RewriteEngine(Set<RewriteRule> rules, ASTParser parser) {
 		//this.context = context;
@@ -52,15 +53,40 @@ public class RewriteEngine {
 	/**
 	 * 
 	 * 
+	 * 
+	 * 
+	 * @param rule
+	 */
+	public void addRule(RewriteRule rule) {
+		rules.add(rule);
+		
+		if(!ruleMap.containsKey(rule.getLhs().getValue())) {
+			ruleMap.put(rule.getLhs().getValue(), new ArrayList<>());
+			
+		}
+		ruleMap.get(rule.getLhs().getValue()).add(rule);
+	}
+	
+	
+	
+	public Set<RewriteRule> getRules(){
+		return this.rules;
+	}
+	
+	/**
+	 * 
+	 * 
 	 * Rewrite function to rewrite an infix expression string into it's normal form.
 	 * Output returned in post fix notation
 	 * 
 	 * @param input Infix expression string
 	 * @return the normal form of input in post fix notation
+	 * @throws ParseException
+	 * @throws RewriteException
 	 */
-	public String rewritePostfix(String input) {
+	public String rewritePostfix(String input) throws ParseException, RewriteException{
 					
-		return parser.postOrderTreverse(rewrite(input));
+		return parser.postOrderTreverse(rewriteNode(input));
 		
 	}
 	
@@ -71,24 +97,68 @@ public class RewriteEngine {
 	 * 
 	 * @param infix expression to rewrite in infix form
 	 * @return root Node of the syntax tree of the result
+	 * @throws ParseException
+	 * @throws RewriteException
 	 */
-	public Node rewrite(String infix) {
-		try {
+	public Node rewriteNode(String infix) throws ParseException, RewriteException{
+		
+			int c = 0; //total iteration, prevents infinite
+	
 			Node root = parser.parseAST(infix);
 			boolean flag = false;  //if flag is false then cannot be rewritten any further
-			
 			do {
-				flag = search(root,root);
-			}while(flag);
+				flag = search(root,null);
+				c++;
+			}while(flag && c<MAX_ITERATION);
 			
 			
+			
+			if(c == MAX_ITERATION)
+				throw new RewriteException("Max Itertion reached, possible infinite rewrite");
+		
 			return root;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param infix String of expression to rewrite in infix form
+	 * @return A RewriteResult containing the result of the rewrite
+	 * @throws ParseException
+	 * @throws RewriteException
+	 */
+	public RewriteResult rewrite(String infix) throws ParseException,RewriteException{
+		int c = 0; //total iteration, prevents infinite
+		
+		Node root = parser.parseAST(infix);
+		boolean flag = false;  //if flag is false then cannot be rewritten any further
+		StringBuilder lastRule;
+		List<RewriteStep> steps = new ArrayList<>();
+		
+		do {
+			lastRule = new StringBuilder();
+			flag = search(root,lastRule);
 			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+			//skips the final step 
+			if(flag) {
+				RewriteStep step = new RewriteStep(copy(root),lastRule.toString());
+				steps.add(step); 
+			}
+			
+			c++;
+		}while(flag && c<MAX_ITERATION);
+		
+		
+		
+		if(c == MAX_ITERATION)
+			throw new RewriteException("Max Itertion reached, possible infinite rewrite");
+	
+		return new RewriteResult(infix,steps,root);
+		
+		
+		
 	}
 	
 	/**
@@ -96,17 +166,13 @@ public class RewriteEngine {
 	 * Call the rewrite method and return the result in infix form
 	 * 
 	 * @param infix expression to rewrite in infix string
+	 * @throws RewriteException 
 	 * @return result after rewrite in infix form
 	 */
-	public String rewriteInfix(String infix) {
+	public String rewriteInfix(String infix) throws ParseException,RewriteException {
 		
-		try {
-			return parser.toInfix(rewritePostfix(infix));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
+		return parser.toInfix(rewritePostfix(infix));
+
 	}
 	
 	
@@ -123,20 +189,20 @@ public class RewriteEngine {
 		}
 		
 		//if is variable then just need to match type and add to var list. 
-		if(rule instanceof VariableNode) {
+		if(rule.getNodeType() ==NodeType.VARIABLE) {
 			//if variable appeared before, check if current match prev
 			if(vars.containsKey(rule.getValue())) {
 				return term.equals(vars.get(rule.getValue()));
 			}else {
 				//if variable type is compatible with operator return type
-				if(term instanceof OperatorNode && ((OperatorNode) term).getReturnType() == ((VariableNode)rule).getType()) {
+				if(term.getNodeType()== NodeType.OPERATOR && term.getType() == rule.getType()) {
 					vars.put(rule.getValue(), term); 
 					return true;
-				}else if(term instanceof ConstantNode) {
+				}else if(term.getNodeType() == NodeType.CONSTANT) {
 					vars.put(rule.getValue(), term); 
 					return true;
-				}else if(term instanceof VariableNode && ((VariableNode)term).getType() == ((VariableNode)rule).getType()) {
-					vars.put(rule.getValue(), term); //replace with a copy of term 
+				}else if(term.getNodeType() == NodeType.VARIABLE && term.getType() == rule.getType()) {
+					vars.put(rule.getValue(), term); 
 					return true;
 				}	
 				return false;
@@ -157,6 +223,8 @@ public class RewriteEngine {
 		
 		//swap the term to be the rule
 		((ASTNode)term).setValue(rule.getValue());
+		((ASTNode)term).setNodeType(rule.getNodeType());
+		((ASTNode)term).setType(rule.getType());
 		((ASTNode)term).setRight(copy(rule.getRight()));
 		((ASTNode)term).setLeft(copy(rule.getLeft()));
 		//fill in variable
@@ -177,6 +245,8 @@ public class RewriteEngine {
 			
 			//set the respective node
 			((ASTNode)m).setValue(vars.get(initialValue).getValue());
+			((ASTNode)m).setNodeType(vars.get(initialValue).getNodeType());
+			((ASTNode)m).setType(vars.get(initialValue).getType());
 			((ASTNode)m).setRight(copy(vars.get(initialValue).getRight()));
 			((ASTNode)m).setLeft(copy(vars.get(initialValue).getLeft()));
 			
@@ -192,34 +262,23 @@ public class RewriteEngine {
 		
 		if(n == null)
 			return null;
-		Node newNode;
-		
-		if(n instanceof VariableNode)
-			newNode = new VariableNode(n.getValue(),((VariableNode)n).getType());
-		else if(n instanceof OperatorNode)
-			newNode = new OperatorNode(n.getValue(),((OperatorNode)n).getReturnType());
-		else
-			newNode = new ConstantNode(n.getValue());
-		
-		((ASTNode)newNode).setLeft(copy(n.getLeft()));
-		((ASTNode)newNode).setRight(copy(n.getRight()));
-		
+		Node newNode = new ASTNode(n.getValue(),copy(n.getLeft()),copy(n.getRight()),n.getType(),n.getNodeType());
 		return newNode;
 		
 	}
 	
 	//use a post-order traversal to search the syntax tree for matching rule
 	//root keeps a reference to the original root so we can swap when we make a copy
-	private boolean search(Node n,Node root) {
+	private boolean search(Node n,StringBuilder rName) {
 		
 		if(n == null)
 			return false;
 		
 		
-		
-		if(search(n.getLeft(),n.getLeft()))
+		//if something is rewritten don't rewrite further
+		if(search(n.getLeft(),rName))
 			return true;
-		if(search(n.getRight(),n.getRight()))
+		if(search(n.getRight(),rName))
 			return true;
 		
 		//try all the possible rule that can be match
@@ -231,12 +290,9 @@ public class RewriteEngine {
 			
 			if(match(n,r.getLhs(),vars)) {
 				substitute(n,r.getRhs(),vars);
-				//if n is copied then update the root referenece
-				if(n != root)
-					root = n;
-					
+				if(rName != null)
+					rName.append(r.getName());
 				return true;
-				
 			}
 		}
 		return false;

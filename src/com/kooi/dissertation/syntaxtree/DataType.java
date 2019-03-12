@@ -7,5 +7,5 @@ package com.kooi.dissertation.syntaxtree;
  *
  */
 public enum DataType {
-	INT,STRING,BOOLEAN,NAT
+	INT,STRING,BOOLEAN,NAT,CONST
 }
