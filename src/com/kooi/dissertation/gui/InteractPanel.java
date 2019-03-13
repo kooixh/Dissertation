@@ -12,6 +12,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,7 +23,9 @@ import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.rewriter.RewriteEngine;
 import com.kooi.dissertation.rewriter.RewriteException;
 import com.kooi.dissertation.rewriter.RewriteResult;
+import com.kooi.dissertation.rewriter.RewriteRule;
 import com.kooi.dissertation.rewriter.RewriteStep;
+import com.kooi.dissertation.syntaxtree.Node;
 
 public class InteractPanel extends JPanel {
 	
@@ -34,10 +37,12 @@ public class InteractPanel extends JPanel {
 	private JTextField rwField;
 	private JTextArea resArea;
 	private JButton rwButton;
+	private JLabel intStat; 
 	
 	//fields
 	private RewriteEngine rw;
 	private StringBuilder currResult;
+	private Node interactiveRoot;
 	
 	
 	//parent frame
@@ -99,7 +104,7 @@ public class InteractPanel extends JPanel {
 		this.add(innerPane);
 		
 		JPanel txtPane = new JPanel();
-		txtPane.setLayout(new FlowLayout());
+		txtPane.setLayout(new BoxLayout(txtPane,BoxLayout.X_AXIS));
 		txtPane.setPreferredSize(new Dimension(200,50));
 		
 		
@@ -107,6 +112,7 @@ public class InteractPanel extends JPanel {
 		
 		rwField = new JTextField(20);
 		rwField.setFont(new Font("Century Gothic",Font.PLAIN,12));
+		rwField.setMaximumSize(rwField.getPreferredSize());
 		txtPane.add(rwField);
 		
 		
@@ -116,11 +122,25 @@ public class InteractPanel extends JPanel {
 			
 			public void actionPerformed(ActionEvent e) {
 				try {
+					
+					//reset interactive
+					if(interactiveRoot != null) {
+						intStat.setText("OFF");
+						intStat.setForeground(Color.RED);
+						interactiveRoot = null;
+					}
+					
+					
+					
+					
+					
 					RewriteResult o = rw.rewrite(rwField.getText());
 					currResult = new StringBuilder();
+					currResult.append("Initial term: "+rwField.getText()+"\n");
+					
 					
 					for(RewriteStep step : o.getListOfSteps()) {
-						currResult.append(home.getParser().toInfix(home.getParser().postOrderTreverse(step.getTermRoot())));
+						currResult.append("=>"+home.getParser().toInfix(home.getParser().postOrderTreverse(step.getTermRoot())));
 						currResult.append(" By "+step.getRule());
 						currResult.append("\n");
 					}
@@ -147,18 +167,95 @@ public class InteractPanel extends JPanel {
 		resPanelFull.setBorder(BorderFactory.createTitledBorder("Result"));
 		
 		
+		//analysis capabilities panel
+		JPanel analPane = new JPanel(); 
+		analPane.setLayout(new BoxLayout(analPane,BoxLayout.X_AXIS));
+		
+		
+		
+		
+		JButton intButton = new JButton("Interactive");
+		
+		
+		intStat = new JLabel("OFF");
+		intStat.setForeground(Color.RED);
+		intStat.setFont(new Font("Century Gothic",Font.PLAIN,12));
+		
+		
+		intButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				
+
+				
+				
+				
+				Object[] rules = rw.getRules().toArray();
+				
+			
+				
+				RewriteRule r = (RewriteRule)JOptionPane.showInputDialog(
+	                    home,
+	                    "Choose a rule to apply\n",
+	                    "Choose rule to apply",
+	                    JOptionPane.PLAIN_MESSAGE,
+	                    null,
+	                    rules,
+	                    "");
+				
+				
+				if(r != null) {
+					if(interactiveRoot == null) {
+						try {
+							interactiveRoot = home.getParser().parseAST(rwField.getText());
+							intStat.setText("ON");
+							intStat.setForeground(Color.GREEN);
+							resArea.setText("");
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}	
+					}
+				
+					try {
+						if(rw.singleSearch(interactiveRoot,r))
+							resArea.append("=> "+home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot))+" By "+r.getName()+"\n");
+						else
+							resArea.append("=>"+home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot))+" Rule does not apply!!"+"\n");
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
+				
+			}
+			
+			
+			
+			
+		});
+		
+		JButton searchButton = new JButton("Search");
+		
+		
+		analPane.add(intButton);	
+		analPane.add(intStat);
+		analPane.add(searchButton);
+		
+		this.add(analPane);
 		//text area for result
 		JPanel resPane = new JPanel();
 		resPane.setLayout(new BoxLayout(resPane,BoxLayout.Y_AXIS));
 		
 		
 		resArea = new JTextArea();
-		resArea.setFont(new Font("Century Gothic",Font.PLAIN,18));
+		resArea.setFont(new Font("Century Gothic",Font.PLAIN,12));
 		resArea.setEditable(false);
 		resArea.setLineWrap(true);
 		resArea.setWrapStyleWord(true);
 		resPane.add(resArea);
-		resArea.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet consectetur adipiscing elit pellentesque habitant morbi tristique. Massa sapien faucibus et molestie ac feugiat sed lectus. Varius quam quisque id diam vel quam. Neque vitae tempus quam pellentesque nec nam aliquam. Consequat interdum varius sit amet mattis vulputate enim nulla. Lectus quam id leo in vitae turpis massa sed. Quam elementum pulvinar etiam non quam lacus. Purus");
+		
 		
 		JScrollPane resScroll = new JScrollPane(resPane);
 		//resScroll.setPreferredSize(new Dimension(200,250));
@@ -167,7 +264,6 @@ public class InteractPanel extends JPanel {
 		
 		this.add(resPanelFull);
 		
-
 	}
 
 }

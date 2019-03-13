@@ -1,5 +1,6 @@
 package com.kooi.dissertation.syntaxtree;
 
+import java.io.Serializable;
 
 /**
  * 
@@ -9,7 +10,7 @@ package com.kooi.dissertation.syntaxtree;
  * @date 12 February 2019
  *
  */
-public interface Node {
+public interface Node extends Serializable{
 	
 	String getValue();
 	public DataType getType();

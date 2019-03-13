@@ -1,5 +1,6 @@
 package com.kooi.dissertation.parser;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,7 @@ import com.kooi.dissertation.syntaxtree.Operator;
  * 
  *
  */
-public class Signature {
+public class Signature implements Serializable{
 	
 	
 	private Map<String,Operator> operators;
@@ -128,6 +129,14 @@ public class Signature {
 	 */
 	public Set<String> getVariableSet(){
 		return variables.keySet();
+	}
+	
+	public void deleteOperator(String op) {
+		operators.remove(op);
+	}
+	
+	public void deleteVariable(String var) {
+		variables.remove(var);
 	}
 
 }
