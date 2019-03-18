@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.Signature;
@@ -15,6 +16,9 @@ import com.kooi.dissertation.rewriter.RewriteResult;
 import com.kooi.dissertation.rewriter.RewriteRule;
 import com.kooi.dissertation.rewriter.RewriteRuleFactory;
 import com.kooi.dissertation.rewriter.RewriteStep;
+import com.kooi.dissertation.rewriter.SearchEngine;
+import com.kooi.dissertation.rewriter.SearchNode;
+import com.kooi.dissertation.rewriter.SearchResult;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
 import com.kooi.dissertation.syntaxtree.Node;
@@ -245,6 +249,96 @@ public class DriverProgram {
 	}
 	
 	
+	public static void searchTest() {
+		
+		Set<Operator> opsB = new HashSet<>();
+		opsB.add(new BinaryOperator("AND",2,DataType.BOOLEAN));
+		opsB.add(new BinaryOperator("OR",2,DataType.BOOLEAN));
+		opsB.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
+
+		
+		HashMap<String,DataType> variablesB = new HashMap<>();
+		variablesB.put("T",DataType.BOOLEAN);
+		variablesB.put("F",DataType.BOOLEAN);
+		variablesB.put("B",DataType.BOOLEAN);
+		
+		Signature cBool = new Signature(opsB,variablesB);
+		ASTParser boolP = new ASTParser(cBool);
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		
+		Set<RewriteRule> rulesB = new HashSet<>();
+		
+		rulesB.add(fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rulesB.add(fB.getRewriteRule("B AND B", "B", "idempotent"));
+		rulesB.add(fB.getRewriteRule("True OR B", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("B OR True", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("False OR False", "False", "idempotent"));
+		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
+		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND-identity"));
+
+		RewriteEngine r = new RewriteEngine(rulesB,boolP);
+		
+		
+		SearchEngine s = new SearchEngine(r);
+		
+		
+		try {
+			
+			Node initialTerm = boolP.parseAST("True AND (False OR (True AND (NOT NOT False OR True)))");
+			Node goalTerm = boolP.parseAST("True AND (False OR True)");
+			
+			SearchResult sr = s.searchTerm(initialTerm, goalTerm, 4);
+			
+			if(sr == null )
+				System.out.println("Not found");
+			else {
+				
+				System.out.println("traversal");
+				printSearch(sr.getSearchTree(),boolP);
+				System.out.println("");
+				
+				System.out.println("Result");
+				Stack<SearchNode> nodes = new Stack<>();
+				
+				SearchNode res = sr.getResult();
+				
+
+				
+				while(res.getParentNode() != null) {
+					nodes.push(res);
+					res = res.getParentNode();
+				}
+				
+				
+				
+				
+				
+				while(!nodes.isEmpty()) {
+					SearchNode curr = nodes.pop();
+					System.out.println("Apply "+curr.getPrevRule()+" to get "+boolP.toInfix(boolP.postOrderTreverse(curr.getTermNode())));
+				}
+				
+				
+				
+			}
+			
+			
+		}catch(Exception e) {
+			
+		}
+	}
+	
+	
+	public static void printSearch(SearchNode root,ASTParser p) throws Exception{
+		
+		System.out.println(p.toInfix(p.postOrderTreverse(root.getTermNode())));
+		
+		for(SearchNode s : root.getChildNodes())
+			printSearch(s,p);
+	}
+	
+	
 
 	public static void main(String args[]) {
 		
@@ -252,9 +346,10 @@ public class DriverProgram {
 		
 		
 		//treeTest();
-		trigoTest();
+		//trigoTest();
 		//mathTest();
 		//booleanTest();
+		searchTest();
 		
 	}
 	

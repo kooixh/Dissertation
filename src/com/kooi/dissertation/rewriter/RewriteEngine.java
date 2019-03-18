@@ -245,6 +245,8 @@ public class RewriteEngine implements Serializable{
 		return term;
 	}
 	
+
+	
 	/**
 	 * 
 	 * Call the rewrite method and return the result in infix form
@@ -342,7 +344,7 @@ public class RewriteEngine implements Serializable{
 	
 	
 	//copy function to copy one node into a new instance
-	private Node copy(Node n) {
+	public Node copy(Node n) {
 		
 		if(n == null)
 			return null;
