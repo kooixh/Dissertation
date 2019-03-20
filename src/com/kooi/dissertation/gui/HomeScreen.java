@@ -15,6 +15,8 @@ import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.rewriter.RewriteEngine;
 import com.kooi.dissertation.rewriter.RewriteRule;
+import com.kooi.dissertation.syntaxtree.BinaryOperator;
+import com.kooi.dissertation.syntaxtree.Operator;
 import com.mxgraph.model.mxCell;
 
 import javax.swing.JButton;
@@ -64,11 +66,7 @@ public class HomeScreen extends JFrame {
 	private RewriteEngine engine;
 	private ASTParser parser;
 	private Signature sig;
-	
-	
-	
 
-	
 
 	/**
 	 * Launch the application.
@@ -172,6 +170,7 @@ public class HomeScreen extends JFrame {
 						updateUI();
 						in.close();
 					}catch(IOException ioe){
+						ioe.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Problem reading configuration file.");
 					}catch(ClassNotFoundException cnfe){
 						JOptionPane.showMessageDialog(null, "Problem reading configuration file.");
@@ -296,8 +295,29 @@ public class HomeScreen extends JFrame {
 				@Override
 			    public void mouseReleased(MouseEvent e) 
 			    {    
-			        sig.deleteOperator(op);
-			        updateUI();
+					
+					
+					Object[] options = {"Okay",
+                    "Delete Operator!"};
+					
+					Operator o = sig.getOperator(op);
+					
+					//default icon, custom title
+					int n = JOptionPane.showOptionDialog(
+					    HomeScreen.this,
+					    "Operator symbol: "+op+"\nType: "+((o instanceof BinaryOperator)?"Binary":"Unary")+"\nReturn type:"+o.getReturnType()+"\nPrecedence: "+o.getPrecedence(),
+					    "Operator info",
+					    JOptionPane.YES_NO_OPTION,
+					    JOptionPane.INFORMATION_MESSAGE,
+					    null,
+					    options,
+					    options[0]);
+					
+					
+					if(n == 1) {
+						sig.deleteOperator(op);
+				        updateUI();
+					}
 			    }
 				
 			});
@@ -325,8 +345,27 @@ public class HomeScreen extends JFrame {
 				@Override
 			    public void mouseReleased(MouseEvent e) 
 			    {    
-			        sig.deleteOperator(id);
-			        updateUI();
+					
+					Object[] options = {"Okay",
+                    "Delete variable!"};
+					
+					//default icon, custom title
+					int n = JOptionPane.showOptionDialog(
+					    HomeScreen.this,
+					    "Varibale id: "+id+"\nType:"+sig.getVariable(id),
+					    "Varibale info",
+					    JOptionPane.YES_NO_OPTION,
+					    JOptionPane.INFORMATION_MESSAGE,
+					    null,
+					    options,
+					    options[0]);
+					
+					
+					if(n == 1) {
+						sig.deleteOperator(id);
+				        updateUI();
+					}
+			        
 			    }
 				
 			});
@@ -352,8 +391,29 @@ public class HomeScreen extends JFrame {
 					@Override
 				    public void mouseReleased(MouseEvent e) 
 				    {    
-				        engine.deleteRule(r);
-				        updateUI();
+						
+						
+						Object[] options = {"Okay",
+	                    "Delete rule!"};
+						
+						//default icon, custom title
+						int n = JOptionPane.showOptionDialog(
+						    HomeScreen.this,
+						    l.getText()+"\nRule name:"+r.getName(),
+						    "Rewrite Rule info",
+						    JOptionPane.YES_NO_OPTION,
+						    JOptionPane.INFORMATION_MESSAGE,
+						    null,
+						    options,
+						    options[0]);
+						
+						
+						
+						if(n == 1) {
+							engine.deleteRule(r);
+							updateUI();
+						}
+							
 				    }
 					
 				});

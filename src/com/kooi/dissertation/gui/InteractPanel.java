@@ -238,6 +238,15 @@ public class InteractPanel extends JPanel {
 		
 		JButton searchButton = new JButton("Search");
 		
+		searchButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				SearchWindow sw = new SearchWindow(InteractPanel.this,home);
+				
+				sw.setVisible(true);
+			}
+		});
+		
 		
 		analPane.add(intButton);	
 		analPane.add(intStat);
@@ -263,7 +272,18 @@ public class InteractPanel extends JPanel {
 		resPanelFull.add(resScroll);
 		
 		this.add(resPanelFull);
-		
 	}
+	
+	
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 */
+	public void setResultArea(String text) {
+		this.resArea.setText(text);
+	}
+	
 
 }
