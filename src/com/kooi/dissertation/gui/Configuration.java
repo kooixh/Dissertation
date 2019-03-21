@@ -5,7 +5,14 @@ import java.io.Serializable;
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.rewriter.RewriteEngine;
-
+/**
+ * 
+ * 
+ * This is a configuration file to hold the save data, including engine, parser and signature
+ * 
+ * @author Kooi
+ *
+ */
 public class Configuration implements Serializable{
 	
 	private RewriteEngine rw;

@@ -13,6 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -101,35 +102,59 @@ public class SearchWindow extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Node initTermNode = home.getParser().parseAST(initialTermField.getText());
-					Node goalTermNode = home.getParser().parseAST(goalTermField.getText());
+					
+					
+					String initTermString = initialTermField.getText();
+					String goalTermString = goalTermField.getText();
+					String boundString = boundField.getText();
+					
+					if(initTermString.equals("") || goalTermString.equals("") ||boundString.equals("")) {
+						JOptionPane.showMessageDialog(SearchWindow.this, "Fields cannot be empty.","Missing values",JOptionPane.ERROR_MESSAGE);
 
-					SearchResult result = sEngine.searchTerm(initTermNode, goalTermNode, Integer.parseInt(boundField.getText()));
-
-					if(result.getResult() == null) {
-						iPanel.setResultArea("Term is not reachable");
-						
-						SearchWindow.this.dispose();
 					}else {
-						StringBuilder sb = new StringBuilder();
+						Node initTermNode = home.getParser().parseAST(initTermString);
+						Node goalTermNode = home.getParser().parseAST(goalTermString);
+						int bound = Integer.parseInt(boundString);
 						
-						sb.append("Reachable!\n");
-						sb.append(initialTermField.getText()+"\n");
-						sb.append(buildResultText(result));
-						
-						
-						iPanel.setResultArea(sb.toString());
-						
-						SearchTreeVisualiser stv = new SearchTreeVisualiser(home,result);
-						stv.setVisible(true);
-						
-						SearchWindow.this.dispose();
+						if(bound <= 0) {
+							JOptionPane.showMessageDialog(SearchWindow.this, "Bound must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
+
+						}else {
+							SearchResult result = sEngine.searchTerm(initTermNode, goalTermNode, bound);
+
+							if(result.getResult() == null) {
+								iPanel.setResultArea("Term is not reachable");
+								
+							}else {
+								StringBuilder sb = new StringBuilder();
+								
+								sb.append("Reachable!\n");
+								sb.append(initialTermField.getText()+"\n");
+								sb.append(buildResultText(result));
+								
+								
+								iPanel.setResultArea(sb.toString());								
+								
+								
+							}
+							
+							//thread for building the visualiser 
+							(new Thread() {
+								public void run() {
+									SearchTreeVisualiser stv = new SearchTreeVisualiser(home,result.getSearchTree());
+									stv.setVisible(true);
+								  }
+							}).start();
+							SearchWindow.this.dispose();
+						}
 					}
 					
-					
 				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(SearchWindow.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
+				}catch(NumberFormatException e2) {
+					JOptionPane.showMessageDialog(SearchWindow.this, "Bound must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
+					
 				}
 			}
 		});
@@ -157,7 +182,7 @@ public class SearchWindow extends JFrame {
 	}
 	
 	
-	
+	//this method builds the trace of the search
 	private String buildResultText(SearchResult result) throws ParseException  {
 		
 		
@@ -173,7 +198,7 @@ public class SearchWindow extends JFrame {
 		
 		while(!nodes.isEmpty()) {
 			SearchNode curr = nodes.pop();
-			trace.append("=>Apply "+curr.getPrevRule()+" to get "+home.getParser().toInfix(home.getParser().postOrderTreverse(curr.getTermNode())));
+			trace.append("\u2b91Apply "+curr.getPrevRule()+" to get "+home.getParser().toInfix(home.getParser().postOrderTreverse(curr.getTermNode())));
 			trace.append("\n");
 		}
 		

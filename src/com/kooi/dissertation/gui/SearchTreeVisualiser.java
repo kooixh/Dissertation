@@ -27,6 +27,15 @@ import com.mxgraph.model.mxICell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
+/**
+ * 
+ * 
+ * This class is a window for the tree visuliser, it uses JGraph's mxgraph for the graphing
+ * 
+ * @author Kooi
+ * @date 21th March 2019 
+ *
+ */
 public class SearchTreeVisualiser extends JFrame{
 	
 	
@@ -41,14 +50,14 @@ public class SearchTreeVisualiser extends JFrame{
 	
 	//engines and result
 	private HomeScreen home;
-	private SearchResult result;
+	private SearchNode root;
 	
 	
-	public SearchTreeVisualiser(HomeScreen home,SearchResult result) {
+	public SearchTreeVisualiser(HomeScreen home,SearchNode r) {
 		
 		
 		this.home = home;
-		this.result = result;
+		this.root = r;
 		graph = new mxGraph();
 		parent = graph.getDefaultParent();
 		
@@ -56,7 +65,6 @@ public class SearchTreeVisualiser extends JFrame{
 		mapping = new HashMap<>();
 		
 		
-		//Object parent = graph.getDefaultParent();
 		
 		
 		addWindowListener(new WindowAdapter(){
@@ -65,11 +73,8 @@ public class SearchTreeVisualiser extends JFrame{
 			}
 		});
 		
-		// define layout
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
-		//mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false);  
-		
-		//((mxHierarchicalLayout)layout).setParentBorder(10);
+
 		
 		layout.setUseBoundingBox(false);
 
@@ -82,7 +87,7 @@ public class SearchTreeVisualiser extends JFrame{
 		try {
 			buildGraph();
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(SearchTreeVisualiser.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 			e1.printStackTrace();
 		}
 		
@@ -121,8 +126,8 @@ public class SearchTreeVisualiser extends JFrame{
 			        			
 			        			JOptionPane.showMessageDialog(null, sb.toString());			        			
 			        		}
-						} catch (HeadlessException | ParseException e1) {
-							// TODO Auto-generated catch block
+						} catch (ParseException e1) {
+							JOptionPane.showMessageDialog(SearchTreeVisualiser.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 							e1.printStackTrace();
 						}
 			        }
@@ -133,14 +138,9 @@ public class SearchTreeVisualiser extends JFrame{
 			});
 		
 		
-		//JPanel panel = new JPanel();
-		//panel.setBorder(new EmptyBorder(40, 40, 40, 40));
-        //panel.setPreferredSize(new Dimension(100, 100));
+
 		graphComponent.setConnectable(false);
-		//graphComponent.setEnabled(true);
-		//panel.add(graphComponent);
-		
-		//panel.setfor
+
 		
 		setMinimumSize(new Dimension(500,500));
 		pack();
@@ -152,24 +152,28 @@ public class SearchTreeVisualiser extends JFrame{
 	
 	
 	private void buildGraph() throws ParseException {
-		SearchNode searchRoot = result.getSearchTree();
-		mxICell graphRoot = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(searchRoot.getTermNode())), 250, 250, 80, 30);
+		//SearchNode searchRoot = result.getSearchTree();
+		mxICell graphRoot = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(root.getTermNode())), 250, 250, 80, 30);
 		
 		graph.updateCellSize(graphRoot);
 		
-		buildGraphUtil(searchRoot,graphRoot,1);
+		buildGraphUtil(root,graphRoot,1);
 
 	}
 	
-	
+	//build the graph using a depth first search
 	private void buildGraphUtil(SearchNode sNode, mxICell currentCell,int depth) throws ParseException {
 		
 		for(SearchNode n : sNode.getChildNodes()) {
-			//mxICell child = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(n.getTermNode())), 0, 0, 80, 30);
-			mxICell child = (mxICell) graph.insertVertex(parent, null, "view term", 0, 0, 80, 30);
+			
+			
+			mxICell child = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(n.getTermNode())), 0, 0, 80, 30);
 			mapping.put(child, n);
-
-			graph.insertEdge(parent, "", "", currentCell, child);
+			
+			
+			//insert edge then go further down
+			graph.insertEdge(parent, "", n.getPrevRule(), currentCell, child);
+			graph.updateCellSize(child);
 			buildGraphUtil(n,child,depth+1);
 		}
 	}

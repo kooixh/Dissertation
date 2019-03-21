@@ -22,7 +22,15 @@ public class SearchEngine {
 	}
 	
 	
-	private SearchNode buildSearchTree(Node initialTerm,int bound) {
+	/**
+	 * 
+	 * Build a search tree 
+	 * 
+	 * @param initialTerm root of the tree
+	 * @param bound maximum depth
+	 * @return root node of the search tree
+	 */
+	public SearchNode buildSearchTree(Node initialTerm,int bound) {
 		
 		SearchNode root = new SearchNode(engine.copy(initialTerm),null,"");
 		
