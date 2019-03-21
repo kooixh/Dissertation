@@ -7,29 +7,46 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.kooi.dissertation.parser.ASTParser;
 import com.kooi.dissertation.parser.ParseException;
 import com.kooi.dissertation.parser.Signature;
 import com.kooi.dissertation.rewriter.RewriteEngine;
 import com.kooi.dissertation.rewriter.RewriteRule;
+import com.kooi.dissertation.syntaxtree.BinaryOperator;
+import com.kooi.dissertation.syntaxtree.Operator;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import java.awt.FlowLayout;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
+import javax.swing.JToolBar;
 import javax.swing.BoxLayout;
-import java.awt.Component;
-
+/**
+ * 
+ * This class is the entry point of the system. Contains the main method that loads the
+ * UI.
+ * 
+ * @author Kooi
+ *
+ */
 public class HomeScreen extends JFrame {
 
 	
@@ -39,18 +56,17 @@ public class HomeScreen extends JFrame {
 	private JPanel sigPanel;
 	private JPanel opPanel;
 	private JPanel varPanel;
+	private InteractPanel iPanel;
 	
 	
-	
+	//engine, signature and parser
 	private RewriteEngine engine;
 	private ASTParser parser;
-	private Set<RewriteRule> rules;
 	private Signature sig;
-	
-	
-	
 
 	
+	//file paths
+	private final String SAVE_PATH = "saves";
 
 	/**
 	 * Launch the application.
@@ -76,8 +92,13 @@ public class HomeScreen extends JFrame {
 		
 		sig = new Signature();
 		parser = new ASTParser(sig);
-		rules = new HashSet<>();
-		engine = new RewriteEngine(rules,parser);
+		engine = new RewriteEngine(parser);
+		
+		
+		File saveDir = new File(SAVE_PATH);
+		if(!saveDir.exists()) {
+			saveDir.mkdir();
+		}
 		
 		
 		setTitle("Rewrite System");
@@ -89,10 +110,99 @@ public class HomeScreen extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(10, 0));
 		
+		
+		
+		JToolBar jtb = new JToolBar();
+		jtb.setFloatable(false);
+		
+		JButton saveBut = new JButton("Save");
+		
+		//create a save dialog and save file as .rwr file
+		saveBut.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setCurrentDirectory(saveDir);
+				FileFilter filter = new FileNameExtensionFilter("Rewrite File","rwr");
+				fileChooser.setFileFilter(filter);
+				if (fileChooser.showSaveDialog(HomeScreen.this) == JFileChooser.APPROVE_OPTION) {
+				  File file = fileChooser.getSelectedFile();
+				  
+				  StringBuilder path = new StringBuilder(file.toString());
+				  
+				  if(!(path.toString()).endsWith(".rwr"))
+					  path.append(".rwr");
+				  
+				  try{
+						ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path.toString()));
+						out.writeObject(new Configuration(HomeScreen.this.engine,HomeScreen.this.parser,HomeScreen.this.sig));
+						out.close();
+						JOptionPane.showMessageDialog(null, "Saved at"+path.toString());
+
+						}catch(IOException ioe){
+							ioe.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Problem writing configuration file.");
+						}
+				}
+				
+				
+			}
+			
+		});
+		
+		
+		JButton loadBut = new JButton("Load");
+		loadBut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setCurrentDirectory(saveDir);
+				FileFilter filter = new FileNameExtensionFilter("Rewrite File","rwr");
+				fileChooser.setFileFilter(filter);
+				
+				if (fileChooser.showOpenDialog(HomeScreen.this) == JFileChooser.APPROVE_OPTION) {
+				  File file = fileChooser.getSelectedFile();
+				  
+				  try{
+						ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.toString()));
+						Configuration c = (Configuration) in.readObject();
+						
+						HomeScreen.this.sig = c.getSig();
+						HomeScreen.this.engine = c.getRw();
+						HomeScreen.this.parser = new ASTParser(HomeScreen.this.sig);
+						
+						
+						HomeScreen.this.remove(iPanel);
+						
+						iPanel = new InteractPanel(HomeScreen.this,engine);
+						HomeScreen.this.add(iPanel,BorderLayout.CENTER);
+						HomeScreen.this.revalidate();
+						HomeScreen.this.repaint();
+						
+						
+						
+						updateUI();
+						in.close();
+					}catch(IOException ioe){
+						ioe.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Problem reading configuration file.");
+					}catch(ClassNotFoundException cnfe){
+						JOptionPane.showMessageDialog(null, "Problem reading configuration file.");
+					}
+				  
+				}
+			}
+		});
+		
+		jtb.add(loadBut);
+		jtb.add(saveBut);
+		
+		this.add(jtb,BorderLayout.PAGE_START);
+		
+		
 		sigPanel = new JPanel();
 		sigPanel.setLayout(new BoxLayout(sigPanel, BoxLayout.Y_AXIS));
 		
-		JLabel sigLabel = new JLabel("Signature");
+		JLabel sigLabel = new JLabel("Signature \u03a3");
 		sigLabel.setFont(new Font("Century Gothic",Font.BOLD,24));		
 		sigPanel.add(sigLabel);
 		
@@ -103,7 +213,7 @@ public class HomeScreen extends JFrame {
 		
 		
 		JLabel opLabel = new JLabel("Operators:");
-		opLabel.setFont(new Font("Century Gothic",Font.PLAIN,14));
+		opLabel.setFont(new Font("Century Gothic",Font.BOLD,14));
 		sigPanel.add(opLabel);
 	
 		//right
@@ -135,7 +245,7 @@ public class HomeScreen extends JFrame {
 
 		
 		JLabel varLabel = new JLabel("Variables:");
-		varLabel.setFont(new Font("Century Gothic",Font.PLAIN,14));
+		varLabel.setFont(new Font("Century Gothic",Font.BOLD,14));
 		
 		varPanel.add(varLabel);
 		
@@ -159,11 +269,11 @@ public class HomeScreen extends JFrame {
 		
 		sidePane.add(ruleScrollPane);
 		
-		InteractPanel iPanel = new InteractPanel(this,engine);
+		iPanel = new InteractPanel(this,engine);
 		
 		contentPane.add(iPanel,BorderLayout.CENTER);
 		contentPane.add(sidePane,BorderLayout.EAST);
-		setMinimumSize(new Dimension(600,400));
+		setMinimumSize(new Dimension(700,500));
 		
 	}
 	
@@ -186,8 +296,50 @@ public class HomeScreen extends JFrame {
 		
 		
 		for(String op : sig.getOperatorSet()) {
-			JLabel l = new JLabel(op);
+			
+			StringBuilder opText = new StringBuilder();
+			
+			if(sig.getOperator(op) instanceof BinaryOperator) {
+				opText.append(": op1 \u2715 op2 \u2192 ");
+				opText.append(sig.getOperator(op).getReturnType());
+			}else {
+				opText.append(": op1 \u2192 "+sig.getOperator(op).getReturnType());
+			}
+			
+			JLabel l = new JLabel(op+opText.toString());
 			l.setFont(new Font("Century Gothic",Font.PLAIN,12));
+			
+			l.addMouseListener(new MouseAdapter() {
+				
+				@Override
+			    public void mouseReleased(MouseEvent e) 
+			    {    
+					
+					Object[] options = {"Okay",
+                    "Delete Operator!"};
+					
+					Operator o = sig.getOperator(op);
+					
+					
+					int n = JOptionPane.showOptionDialog(
+					    HomeScreen.this,
+					    "Operator symbol: "+op+"\nType: "+((o instanceof BinaryOperator)?"Binary":"Unary")+"\nReturn type:"+o.getReturnType()+"\nPrecedence: "+o.getPrecedence(),
+					    "Operator info",
+					    JOptionPane.YES_NO_OPTION,
+					    JOptionPane.INFORMATION_MESSAGE,
+					    null,
+					    options,
+					    options[0]);
+					
+					
+					if(n == 1) {
+						sig.deleteOperator(op);
+				        updateUI();
+					}
+			    }
+				
+			});
+			
 			opPanel.add(l);
 		}
 		
@@ -198,13 +350,44 @@ public class HomeScreen extends JFrame {
 		
 		
 		JLabel varLabel = new JLabel("Variables:");
-		varLabel.setFont(new Font("Century Gothic",Font.PLAIN,14));
+		varLabel.setFont(new Font("Century Gothic",Font.BOLD,14));
 		varPanel.add(varLabel);
 		
 		
-		for(String id:sig.getVariableSet()) {
+		for(String id: sig.getVariableSet()) {
 			JLabel l = new JLabel(id+":"+sig.getVariable(id));
 			l.setFont(new Font("Century Gothic",Font.PLAIN,12));
+			
+			l.addMouseListener(new MouseAdapter() {
+				
+				@Override
+			    public void mouseReleased(MouseEvent e) 
+			    {    
+					
+					Object[] options = {"Okay",
+                    "Delete variable!"};
+					
+					//default icon, custom title
+					int n = JOptionPane.showOptionDialog(
+					    HomeScreen.this,
+					    "Varibale id: "+id+"\nType:"+sig.getVariable(id),
+					    "Varibale info",
+					    JOptionPane.YES_NO_OPTION,
+					    JOptionPane.INFORMATION_MESSAGE,
+					    null,
+					    options,
+					    options[0]);
+					
+					
+					if(n == 1) {
+						sig.deleteVariable(id);
+				        updateUI();
+					}
+			        
+			    }
+				
+			});
+			
 			varPanel.add(l);
 		}
 		
@@ -218,18 +401,49 @@ public class HomeScreen extends JFrame {
 		
 		for(RewriteRule r : engine.getRules()) {
 			try {
-				JLabel l = new JLabel(parser.toInfix(parser.postOrderTreverse(r.getLhs()))+"->"+parser.toInfix(parser.postOrderTreverse(r.getRhs())));
+				JLabel l = new JLabel(parser.toInfix(parser.postOrderTreverse(r.getLhs()))+"\u27f6"+parser.toInfix(parser.postOrderTreverse(r.getRhs())));
 				l.setFont(new Font("Century Gothic",Font.PLAIN,12));
+				
+				l.addMouseListener(new MouseAdapter() {
+					
+					@Override
+				    public void mouseReleased(MouseEvent e) 
+				    {    
+						
+						
+						Object[] options = {"Okay",
+	                    "Delete rule!"};
+						
+						//default icon, custom title
+						int n = JOptionPane.showOptionDialog(
+						    HomeScreen.this,
+						    l.getText()+"\nRule name:"+r.getName(),
+						    "Rewrite Rule info",
+						    JOptionPane.YES_NO_OPTION,
+						    JOptionPane.INFORMATION_MESSAGE,
+						    null,
+						    options,
+						    options[0]);
+						
+						if(n == 1) {
+							engine.deleteRule(r);
+							updateUI();
+						}
+							
+				    }
+					
+				});
+				
 				rulePane.add(l);
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(HomeScreen.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	
-	
+	//getters for engine, parsers and sig 
 
 	public RewriteEngine getEngine() {
 		return engine;
@@ -237,10 +451,6 @@ public class HomeScreen extends JFrame {
 
 	public ASTParser getParser() {
 		return parser;
-	}
-
-	public Set<RewriteRule> getRules() {
-		return rules;
 	}
 
 	public Signature getSig() {

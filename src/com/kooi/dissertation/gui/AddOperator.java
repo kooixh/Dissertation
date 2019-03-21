@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -73,19 +74,46 @@ public class AddOperator extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				
-				Operator o;
-				
-				if(opType.getSelectedIndex() == 0 ) {
-					o = new UnaryOperator(symbolField.getText(),Integer.parseInt(precedenceField.getText()),typeMap.get(opRetType.getSelectedItem()));
-				}else {
-					o = new BinaryOperator(symbolField.getText(),Integer.parseInt(precedenceField.getText()),typeMap.get(opRetType.getSelectedItem()));
-				}
+				String symbol = symbolField.getText();
+				String precd = precedenceField.getText();
 
-				home.getSig().addOperator(o);
-				home.updateUI();
+				
+				if(symbol.equals("") || precd.equals("")) {
+					JOptionPane.showMessageDialog(AddOperator.this, "Field cannot be empty.","Missing values",JOptionPane.ERROR_MESSAGE);
+				}	
+				else if(symbol.equals("{") || symbol.equals("}") || symbol.equals("(") || symbol.equals(")") || symbol.equals("[") || symbol.equals("]")) {
+					JOptionPane.showMessageDialog(AddOperator.this, "Your operator symbol is invalid, cannot be any sort of brackets.","Invalid values",JOptionPane.ERROR_MESSAGE);
+				}else {
+					
+					
+					//int precedence = 0;
+					try {
+						int precedence = Integer.parseInt(precd);
+						if(precedence <=0 ) {
+							JOptionPane.showMessageDialog(AddOperator.this, "Precedence must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
+
+						}else {
+							Operator o;
+							
+							if(opType.getSelectedIndex() == 0 ) {
+								o = new UnaryOperator(symbol,precedence,typeMap.get(opRetType.getSelectedItem()));
+							}else {
+								o = new BinaryOperator(symbol,precedence,typeMap.get(opRetType.getSelectedItem()));
+							}
+	
+							home.getSig().addOperator(o);
+							home.updateUI();
+							AddOperator.this.dispose();
+						}
+					}catch (NumberFormatException nfe){
+						JOptionPane.showMessageDialog(AddOperator.this, "Precedence must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
+					}
+					
+					
+				}
 				
 				
-				AddOperator.this.dispose();
+
 				
 				
 			}

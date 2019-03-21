@@ -1,7 +1,9 @@
 package com.kooi.dissertation.rewriter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +24,7 @@ import com.kooi.dissertation.syntaxtree.NodeType;
  * @date 13 February 2019 
  *
  */
-public class RewriteEngine {
+public class RewriteEngine implements Serializable{
 	
 	
 	
@@ -49,6 +51,14 @@ public class RewriteEngine {
 		}
 	}
 	
+	public RewriteEngine(ASTParser parser) {
+		//this.context = context;
+		this.parser = parser;
+		this.rules = new HashSet<>();		
+		ruleMap = new HashMap<>();
+		
+	}
+	
 	
 	/**
 	 * 
@@ -68,9 +78,23 @@ public class RewriteEngine {
 	}
 	
 	
-	
+	/**
+	 * 
+	 * 
+	 * Get the set of rewrite rules for the system
+	 * 
+	 * @return
+	 */
 	public Set<RewriteRule> getRules(){
 		return this.rules;
+	}
+	
+	
+	public void deleteRule(RewriteRule rule) {
+		rules.remove(rule);
+		
+		List<RewriteRule> list = ruleMap.get(rule.getLhs().getValue());
+		((ArrayList)list).remove(rule);
 	}
 	
 	/**
@@ -157,9 +181,71 @@ public class RewriteEngine {
 	
 		return new RewriteResult(infix,steps,root);
 		
+	}
+	
+	public boolean singleSearch(Node node,RewriteRule r) {
+		
+		
+		return singleRewrite(node,r);
 		
 		
 	}
+	
+	
+	/**
+	 * 
+	 * 
+	 * This method implements the algorithm to perform a single rewrite
+	 * 
+	 * @param t
+	 * @param r
+	 * @return
+	 */
+	public boolean singleRewrite(Node t, RewriteRule r) {
+		
+		if(t == null)
+			return false;
+		
+		if(singleRewrite(t.getLeft(),r))
+			return true;
+		
+		if(singleRewrite(t.getRight(),r))
+			return true;
+		
+		Map<String,Node> vars = new HashMap<>();
+		
+		if(match(t,r.getLhs(),vars)) {
+			substitute(t,r.getRhs(),vars);
+			return true;
+		}
+		
+		return false;
+		
+		
+		
+	}
+	
+	/**
+	 * 
+	 * Apply a rule to a term just once.
+	 * 
+	 * 
+	 * @param term Term to rewrite
+	 * @param rule Rewrite Rule to apply
+	 * @return the node after applying the rule
+	 */
+	public Node applyRule(Node term,RewriteRule rule) {
+		
+		Map<String,Node> vars = new HashMap<>();
+		
+		if(match(term,rule.getLhs(),vars)) {
+			substitute(term,rule.getRhs(),vars);
+			return term;
+		}
+		return term;
+	}
+	
+
 	
 	/**
 	 * 
@@ -258,7 +344,7 @@ public class RewriteEngine {
 	
 	
 	//copy function to copy one node into a new instance
-	private Node copy(Node n) {
+	public Node copy(Node n) {
 		
 		if(n == null)
 			return null;

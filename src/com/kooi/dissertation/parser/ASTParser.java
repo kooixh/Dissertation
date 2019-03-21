@@ -1,5 +1,6 @@
 package com.kooi.dissertation.parser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import com.kooi.dissertation.syntaxtree.UnaryOperator;
  * @date 4th Febuary 2019
  *
  */
-public class ASTParser {
+public class ASTParser implements Serializable{
 	
 	//fields
 	private Signature context;

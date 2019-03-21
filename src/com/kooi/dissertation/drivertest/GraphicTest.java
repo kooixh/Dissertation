@@ -54,11 +54,6 @@ public class GraphicTest extends JFrame{
 		g.insertEdge(parent, null, "", mapping.get("two"), mapping.get("four"));
 		g.insertEdge(parent, null, "", mapping.get("three"), mapping.get("five"));
 		g.insertEdge(parent, null, "", mapping.get("three"), mapping.get("six"));
-
-
-
-
-
 		
 		g.getModel().endUpdate();
 	}

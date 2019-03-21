@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -68,9 +69,15 @@ public class AddVariable extends JFrame {
 		addBtn = new JButton("Add");
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				home.getSig().addVariable(symbolField.getText(), typeMap.get(type.getSelectedItem()));
-				home.updateUI();
-				AddVariable.this.dispose();
+				
+				if(symbolField.getText().equals("")) {
+					JOptionPane.showMessageDialog(AddVariable.this, "Field cannot be empty.","Missing values",JOptionPane.ERROR_MESSAGE);
+				}else {
+					home.getSig().addVariable(symbolField.getText(), typeMap.get(type.getSelectedItem()));
+					home.updateUI();
+					AddVariable.this.dispose();
+				}
+
 			}
 		});
 		

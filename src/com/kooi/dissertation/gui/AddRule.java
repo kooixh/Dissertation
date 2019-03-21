@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -69,10 +70,17 @@ public class AddRule extends JFrame {
 		addBtn = new JButton("Add");
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RewriteRule rule = rFac.getRewriteRule(lhsTextField.getText(), rhsTextField.getText(), nameField.getText());
-				home.getEngine().addRule(rule);
-				home.updateUI();
-				AddRule.this.dispose();
+				
+				if(lhsTextField.getText().equals("") || rhsTextField.getText().equals("") || nameField.getText().equals("")) {
+					JOptionPane.showMessageDialog(AddRule.this, "Fields cannot be empty.","Missing values",JOptionPane.ERROR_MESSAGE);
+				}else {
+					RewriteRule rule = rFac.getRewriteRule(lhsTextField.getText(), rhsTextField.getText(), nameField.getText());
+					home.getEngine().addRule(rule);
+					home.updateUI();
+					AddRule.this.dispose();
+				}
+				
+
 			}
 			
 		});

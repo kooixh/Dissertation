@@ -1,5 +1,6 @@
 package com.kooi.dissertation.syntaxtree;
 
+import java.io.Serializable;
 
 /**
  * 
@@ -9,7 +10,7 @@ package com.kooi.dissertation.syntaxtree;
  * @author Kooi
  * @date 6th February 2019
  */
-public abstract class AbstractOperator implements Operator {
+public abstract class AbstractOperator implements Operator,Serializable {
 	
 	
 
