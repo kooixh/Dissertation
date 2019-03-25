@@ -28,6 +28,47 @@ import com.kooi.dissertation.syntaxtree.UnaryOperator;
 public class DriverProgram {
 	
 	
+	
+	static void parsingTest() {
+		Set<Operator> opsB = new HashSet<>();
+		opsB.add(new BinaryOperator("AND",2,DataType.BOOLEAN));
+		opsB.add(new BinaryOperator("OR",2,DataType.BOOLEAN));
+		opsB.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
+
+		
+		HashMap<String,DataType> variablesB = new HashMap<>();
+		variablesB.put("T",DataType.BOOLEAN);
+		variablesB.put("F",DataType.BOOLEAN);
+		variablesB.put("B",DataType.BOOLEAN);
+		
+		Signature cBool = new Signature(opsB,variablesB);
+		ASTParser boolP = new ASTParser(cBool);
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		
+		Set<RewriteRule> rulesB = new HashSet<>();
+		
+		rulesB.add(fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rulesB.add(fB.getRewriteRule("B AND B", "B", "idempotent"));
+		rulesB.add(fB.getRewriteRule("True OR B", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("B OR True", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("False OR False", "False", "idempotent"));
+		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
+		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND-identity"));
+
+		RewriteEngine r = new RewriteEngine(rulesB,boolP);
+		try {
+			
+			Node n = boolP.parseAST("2 OR AND OR 2");
+			
+			prettyPrint(n);
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	static void trigoTest() {
 		Set<Operator> ops = new HashSet<>();
 		ops.add(new BinaryOperator("+",2,DataType.INT));
@@ -63,8 +104,6 @@ public class DriverProgram {
 		rules.add(f.getRewriteRule("1*x", "x", "multiply one rule"));
 		
 		RewriteEngine r = new RewriteEngine(rules,p);
-		
-		
 		try {
 			
 			
@@ -176,7 +215,6 @@ public class DriverProgram {
 		
 		try {
 			
-		
 			
 			String s = "(succ(10)+ ((succ(0) * succ(1))))";
 			
@@ -244,8 +282,71 @@ public class DriverProgram {
 		}catch(Exception e) {
 			
 		}
+	}
+	
+	
+	
+	public static void indvRewriteTest() {
+		Set<Operator> opsB = new HashSet<>();
+		opsB.add(new BinaryOperator("AND",2,DataType.BOOLEAN));
+		opsB.add(new BinaryOperator("OR",2,DataType.BOOLEAN));
+		opsB.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
+
 		
+		HashMap<String,DataType> variablesB = new HashMap<>();
+		variablesB.put("T",DataType.BOOLEAN);
+		variablesB.put("F",DataType.BOOLEAN);
+		variablesB.put("B",DataType.BOOLEAN);
 		
+		Signature cBool = new Signature(opsB,variablesB);
+		ASTParser boolP = new ASTParser(cBool);
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		
+		Set<RewriteRule> rulesB = new HashSet<>();
+		
+		rulesB.add(fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rulesB.add(fB.getRewriteRule("B AND B", "B", "idempotent"));
+		rulesB.add(fB.getRewriteRule("True OR B", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("B OR True", "True", "OR-identity"));
+		rulesB.add(fB.getRewriteRule("False OR False", "False", "idempotent"));
+		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
+		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND-identity"));
+
+		RewriteEngine r = new RewriteEngine(rulesB,boolP);
+		try {
+			
+			System.out.println("Rules: ");
+			for(RewriteRule rule : rulesB) {
+				System.out.println(boolP.toInfix(boolP.postOrderTreverse(rule.getLhs()))+" -> "+boolP.toInfix(boolP.postOrderTreverse(rule.getRhs()))+" : "+rule.getName());
+			}
+			System.out.println("\n\n");
+			
+			String s = "True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))";
+
+			Node root = boolP.parseAST(s);
+			
+			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			System.out.println("");
+
+			
+			System.out.println("Apply OR-identity");
+			r.singleRewrite(root, fB.getRewriteRule("B OR True", "True", "OR-identity"));
+			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			System.out.println("Apply idempotent");
+			r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			System.out.println("Apply idempotent");
+			r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			System.out.println("Apply double negation");
+			r.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -310,10 +411,6 @@ public class DriverProgram {
 					res = res.getParentNode();
 				}
 				
-				
-				
-				
-				
 				while(!nodes.isEmpty()) {
 					SearchNode curr = nodes.pop();
 					System.out.println("Apply "+curr.getPrevRule()+" to get "+boolP.toInfix(boolP.postOrderTreverse(curr.getTermNode())));
@@ -349,7 +446,9 @@ public class DriverProgram {
 		//trigoTest();
 		//mathTest();
 		//booleanTest();
-		searchTest();
+		//searchTest();
+		parsingTest();
+		//indvRewriteTest();
 		
 	}
 	

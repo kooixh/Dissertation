@@ -219,7 +219,7 @@ public class InteractPanel extends JPanel {
 							intStat.setForeground(Color.GREEN);
 							resArea.setText("");
 						} catch (ParseException e1) {
-							JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 							e1.printStackTrace();
 						}	
 					}
@@ -230,7 +230,7 @@ public class InteractPanel extends JPanel {
 						else
 							resArea.append("\u2b91 "+home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot))+" Rule does not apply!!"+"\n");
 					} catch (ParseException e1) {
-						JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
 					}
 				}
@@ -268,7 +268,7 @@ public class InteractPanel extends JPanel {
 						  }
 					}).start();
 				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
 			}

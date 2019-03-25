@@ -75,9 +75,15 @@ public class AddRule extends JFrame {
 					JOptionPane.showMessageDialog(AddRule.this, "Fields cannot be empty.","Missing values",JOptionPane.ERROR_MESSAGE);
 				}else {
 					RewriteRule rule = rFac.getRewriteRule(lhsTextField.getText(), rhsTextField.getText(), nameField.getText());
-					home.getEngine().addRule(rule);
-					home.updateUI();
-					AddRule.this.dispose();
+					if(rule == null) {
+						JOptionPane.showMessageDialog(AddRule.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
+
+					}else {
+						home.getEngine().addRule(rule);
+						home.updateUI();
+						AddRule.this.dispose();
+					}
+					
 				}
 				
 
