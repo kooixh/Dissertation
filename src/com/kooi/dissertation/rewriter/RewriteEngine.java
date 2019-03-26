@@ -129,6 +129,8 @@ public class RewriteEngine implements Serializable{
 			int c = 0; //total iteration, prevents infinite
 	
 			Node root = parser.parseAST(infix);
+			if(!checkTerm(root))
+				throw new RewriteException("Term to rewrite cannot contain declared variable.");
 			boolean flag = false;  //if flag is false then cannot be rewritten any further
 			do {
 				flag = search(root,null);
@@ -154,9 +156,16 @@ public class RewriteEngine implements Serializable{
 	 * @throws RewriteException
 	 */
 	public RewriteResult rewrite(String infix) throws ParseException,RewriteException{
+		
+		
+		
 		int c = 0; //total iteration, prevents infinite
 		
 		Node root = parser.parseAST(infix);
+		
+		if(!checkTerm(root))
+			throw new RewriteException("Term to rewrite cannot contain declared variable.");
+		
 		boolean flag = false;  //if flag is false then cannot be rewritten any further
 		StringBuilder lastRule;
 		List<RewriteStep> steps = new ArrayList<>();
@@ -184,6 +193,9 @@ public class RewriteEngine implements Serializable{
 	}
 	
 	public boolean singleSearch(Node node,RewriteRule r) throws RewriteException {
+		
+		if(!checkTerm(node))
+			throw new RewriteException("Term to rewrite cannot contain declared variable.");
 		
 		
 		return singleRewrite(node,r);
@@ -237,6 +249,11 @@ public class RewriteEngine implements Serializable{
 	 * @throws RewriteException 
 	 */
 	public Node applyRule(Node term,RewriteRule rule) throws RewriteException {
+		
+		
+		if(!checkTerm(term))
+			throw new RewriteException("Term to rewrite cannot contain declared variable.");
+
 		
 		Map<String,Node> vars = new HashMap<>();
 		
@@ -358,6 +375,21 @@ public class RewriteEngine implements Serializable{
 		Node newNode = new ASTNode(n.getValue(),copy(n.getLeft()),copy(n.getRight()),n.getType(),n.getNodeType());
 		return newNode;
 		
+	}
+	
+	//this method checks that a term is well formed
+	private boolean checkTerm(Node n) {
+		
+		if(n == null)
+			return true;
+		
+		if(n.getNodeType() == NodeType.VARIABLE)
+			return false;
+		
+		if(!checkTerm(n.getLeft()))
+			return false;
+		
+		return checkTerm(n.getRight());
 	}
 	
 	//use a post-order traversal to search the syntax tree for matching rule

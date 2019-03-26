@@ -163,7 +163,7 @@ public class InteractPanel extends JPanel {
 					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for mismatch parenthesis.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}catch( RewriteException e2) {
-					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during rewriting, check for possible infinite rewrite rule.","Rewrite Exception",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during rewriting, "+e2.getMessage(),"Rewrite Exception",JOptionPane.ERROR_MESSAGE);
 					e2.printStackTrace();
 				}
 			}
@@ -233,7 +233,7 @@ public class InteractPanel extends JPanel {
 						JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
 					} catch (RewriteException e1) {
-						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(InteractPanel.this, "Error during rewriting, "+e1.getMessage(),"Rewrite Error",JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
 					}
 				}
@@ -274,7 +274,7 @@ public class InteractPanel extends JPanel {
 					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				} catch (RewriteException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during rewriting, "+e1.getMessage(),"Rewrite Exception",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
 			}

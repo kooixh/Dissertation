@@ -157,7 +157,7 @@ public class SearchWindow extends JFrame {
 					JOptionPane.showMessageDialog(SearchWindow.this, "Bound must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
 					
 				} catch (RewriteException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(SearchWindow.this, "Error during rewriting, "+e1.getMessage(),"Rewrite Error",JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
 			}
