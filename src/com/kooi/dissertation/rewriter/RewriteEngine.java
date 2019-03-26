@@ -183,7 +183,7 @@ public class RewriteEngine implements Serializable{
 		
 	}
 	
-	public boolean singleSearch(Node node,RewriteRule r) {
+	public boolean singleSearch(Node node,RewriteRule r) throws RewriteException {
 		
 		
 		return singleRewrite(node,r);
@@ -200,8 +200,9 @@ public class RewriteEngine implements Serializable{
 	 * @param t
 	 * @param r
 	 * @return
+	 * @throws RewriteException 
 	 */
-	public boolean singleRewrite(Node t, RewriteRule r) {
+	public boolean singleRewrite(Node t, RewriteRule r) throws RewriteException {
 		
 		if(t == null)
 			return false;
@@ -233,8 +234,9 @@ public class RewriteEngine implements Serializable{
 	 * @param term Term to rewrite
 	 * @param rule Rewrite Rule to apply
 	 * @return the node after applying the rule
+	 * @throws RewriteException 
 	 */
-	public Node applyRule(Node term,RewriteRule rule) {
+	public Node applyRule(Node term,RewriteRule rule) throws RewriteException {
 		
 		Map<String,Node> vars = new HashMap<>();
 		
@@ -268,7 +270,7 @@ public class RewriteEngine implements Serializable{
 	
 	//matching function to determine if term and rule match, vars map to keep track of 
 	//the variables
-	private boolean match(Node term , Node rule, Map<String,Node> vars) {
+	private boolean match(Node term , Node rule, Map<String,Node> vars) throws RewriteException {
 		
 		if(term == null || rule == null) {
 			return term == null && rule == null; //they match if both are null
@@ -294,6 +296,11 @@ public class RewriteEngine implements Serializable{
 				return false;
 			}
 		}else { //if rule is not a variable then must match symbol
+			
+			
+			if(term.getNodeType() == NodeType.VARIABLE) {
+				throw new RewriteException("Term to rewrite cannot contain declared variable.");
+			}
 			
 			if(rule.getValue().equals(term.getValue())) //recursively match the sub-expression
 				return (match(term.getLeft(),rule.getLeft(),vars) && match(term.getRight(),rule.getRight(),vars));
@@ -355,11 +362,10 @@ public class RewriteEngine implements Serializable{
 	
 	//use a post-order traversal to search the syntax tree for matching rule
 	//root keeps a reference to the original root so we can swap when we make a copy
-	private boolean search(Node n,StringBuilder rName) {
+	private boolean search(Node n,StringBuilder rName) throws RewriteException {
 		
 		if(n == null)
 			return false;
-		
 		
 		//if something is rewritten don't rewrite further
 		if(search(n.getLeft(),rName))

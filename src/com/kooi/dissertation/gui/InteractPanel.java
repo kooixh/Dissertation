@@ -232,6 +232,9 @@ public class InteractPanel extends JPanel {
 					} catch (ParseException e1) {
 						JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
+					} catch (RewriteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 				
@@ -269,6 +272,9 @@ public class InteractPanel extends JPanel {
 					}).start();
 				} catch (ParseException e1) {
 					JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.","Parsing Exception",JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (RewriteException e1) {
+					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}

@@ -166,7 +166,7 @@ public class DriverProgram {
 			}
 			System.out.println("\n\n");
 			
-			String s = "True AND ((NOT NOT True) AND (False OR True AND True)) AND (False OR (True AND True OR False))";
+			String s = "B AND B";
 
 			RewriteResult res = r.rewrite(s);
 			
@@ -249,12 +249,13 @@ public class DriverProgram {
 		RewriteRuleFactory f = new RewriteRuleFactory(p);
 		rules.add(f.getRewriteRule("x+0", "x", "adding zero rule"));
 		rules.add(f.getRewriteRule("0+x", "x", "adding zero rule"));
-		rules.add(f.getRewriteRule("succ(x)+y", "succ(x+y)", "succ add rule"));
+		//rules.add(f.getRewriteRule("succ(x)+y", "succ(x+y)", "succ add rule"));
 		rules.add(f.getRewriteRule("succ(x)*succ(y)", "x*y", "succ multiply rule"));
 		rules.add(f.getRewriteRule("x*0", "0", "multiply zero rule"));
 		rules.add(f.getRewriteRule("0*x", "0", "multiply zero rule"));
 		rules.add(f.getRewriteRule("x*1", "x", "multiply one rule"));
 		rules.add(f.getRewriteRule("1*x", "x", "multiply one rule"));
+		rules.add(f.getRewriteRule("succ(x+y)", "succ(x)+succ(y)", "succ test rule"));
 		
 		RewriteEngine r = new RewriteEngine(rules,p);
 		
@@ -268,7 +269,7 @@ public class DriverProgram {
 			}
 			System.out.println("\n\n");
 			
-			String s = "succ(1)*(succ(10)+ (( (succ(0)+0) * succ(1) )))";
+			String s = "succ((x+10)+x)";
 			RewriteResult res = r.rewrite(s);
 			
 			System.out.println("Initial term: "+res.getInitialTerm());
@@ -280,7 +281,7 @@ public class DriverProgram {
 			
 			
 		}catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -331,18 +332,22 @@ public class DriverProgram {
 
 			
 			System.out.println("Apply OR-identity");
-			r.singleRewrite(root, fB.getRewriteRule("B OR True", "True", "OR-identity"));
-			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
-			System.out.println("Apply idempotent");
-			r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
-			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
-			System.out.println("Apply idempotent");
-			r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
-			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
-			System.out.println("Apply double negation");
-			r.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
-			System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
-			
+			try {
+				r.singleRewrite(root, fB.getRewriteRule("B OR True", "True", "OR-identity"));
+				System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+				System.out.println("Apply idempotent");
+				r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+				System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+				System.out.println("Apply idempotent");
+				r.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+				System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+				System.out.println("Apply double negation");
+				r.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+				System.out.println(boolP.toInfix(boolP.postOrderTreverse(root)));
+			} catch (RewriteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -444,10 +449,10 @@ public class DriverProgram {
 		
 		//treeTest();
 		//trigoTest();
-		//mathTest();
+		mathTest();
 		//booleanTest();
 		//searchTest();
-		parsingTest();
+		//parsingTest();
 		//indvRewriteTest();
 		
 	}

@@ -112,8 +112,42 @@ public class HomeScreen extends JFrame {
 		
 		
 		
+		
+		
 		JToolBar jtb = new JToolBar();
 		jtb.setFloatable(false);
+		
+		
+		JButton newBut = new JButton("New");
+		
+		newBut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				int n = JOptionPane.showConfirmDialog(
+					    HomeScreen.this,
+					    "Do you wish to start a new rewrite system? Signature and rules will be cleared.",
+					    "Start new",
+					    JOptionPane.YES_NO_OPTION);
+				
+				if(n == 0) {
+					HomeScreen.this.sig = new Signature();
+					parser = new ASTParser(sig);
+					engine = new RewriteEngine(parser);
+					
+					
+					HomeScreen.this.remove(iPanel);
+					
+					iPanel = new InteractPanel(HomeScreen.this,engine);
+					HomeScreen.this.add(iPanel,BorderLayout.CENTER);
+					HomeScreen.this.revalidate();
+					HomeScreen.this.repaint();
+					
+					updateUI();
+				}
+
+			}
+		});
 		
 		JButton saveBut = new JButton("Save");
 		
@@ -193,6 +227,7 @@ public class HomeScreen extends JFrame {
 			}
 		});
 		
+		jtb.add(newBut);
 		jtb.add(loadBut);
 		jtb.add(saveBut);
 		
