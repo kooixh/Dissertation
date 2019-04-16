@@ -47,6 +47,7 @@ public class AddVariable extends JFrame {
 		typeMap.put("NAT", DataType.NAT);
 		typeMap.put("STRING", DataType.STRING);
 		typeMap.put("BOOLEAN", DataType.BOOLEAN);
+		typeMap.put("CONSTANT", DataType.CONST);
 		
 		
 		

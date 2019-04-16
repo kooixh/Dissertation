@@ -18,6 +18,7 @@ import com.kooi.dissertation.rewriter.RewriteRule;
 import com.kooi.dissertation.rewriter.RewriteRuleFactory;
 import com.kooi.dissertation.syntaxtree.BinaryOperator;
 import com.kooi.dissertation.syntaxtree.DataType;
+import com.kooi.dissertation.syntaxtree.Node;
 import com.kooi.dissertation.syntaxtree.Operator;
 import com.kooi.dissertation.syntaxtree.UnaryOperator;
 
@@ -146,9 +147,9 @@ public class RewriteTest {
 	@Test
 	public void testRewrite5()throws ParseException, RewriteException {
 		
-		String input = "succ(succ(0)) +x";
+		String input = "succ(succ(0)) +z";
 		String output = r.rewritePostfix(input);
-		String expected = "x succ succ";
+		String expected = "z succ succ";
 		
 		assertEquals(expected,output);
 	}
@@ -184,9 +185,9 @@ public class RewriteTest {
 	@Test
 	public void testRewrite9() throws ParseException, RewriteException{
 		
-		String input = "0+succ(0)*succ(0)+x";
+		String input = "0+succ(0)*succ(0)+z";
 		String output = r.rewritePostfix(input);
-		String expected = "x";
+		String expected = "z";
 		
 		assertEquals(expected,output);
 	}
@@ -203,11 +204,90 @@ public class RewriteTest {
 	@Test
 	public void testRewrite11()throws ParseException, RewriteException {
 		
-		String input = "succ(1)*(succ(10)+ (( (succ(0)+0) * succ(1) )))";
+		String input = "succ(1)*(succ(10)+ (( (succ(0)+0) * succ(1))))";
 		String output = r.rewritePostfix(input);
 		String expected = "10";
 		
 		assertEquals(expected,output);
+	}
+	
+	@Test
+	public void testSingleRewrite1()throws ParseException, RewriteException{
+		String input = "NOT NOT True";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True");
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		
+		assertEquals(root,expected);
+	}
+	
+	@Test
+	public void testSingleRewrite2()throws ParseException, RewriteException{
+		String input = "True AND (NOT NOT True)";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True AND True");
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		
+		assertEquals(root,expected);
+	}
+	
+	@Test
+	public void testSingleRewrite3()throws ParseException, RewriteException{
+		String input = "True AND (NOT NOT True)";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True AND (NOT NOT True)");
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+		
+		assertEquals(root,expected);
+	}
+	
+	@Test
+	public void testSingleRewrite4()throws ParseException, RewriteException{
+		String input = "True AND (NOT NOT True)";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True");
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rB.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+		
+		assertEquals(root,expected);
+	}
+	
+	@Test
+	public void testSingleRewrite5()throws ParseException, RewriteException{
+		String input = "True AND (NOT NOT True) OR False";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True OR False");
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rB.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+		
+		assertEquals(root,expected);
+	}
+	
+	@Test
+	public void testSingleRewrite6()throws ParseException, RewriteException{
+		String input = "True AND (NOT NOT False) OR False";
+		Node root = boolP.parseAST(input);
+		
+		Node expected = boolP.parseAST("True AND False OR False");
+		
+		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
+		rB.singleRewrite(root, fB.getRewriteRule("NOT NOT B", "B", "double negation"));
+		rB.singleRewrite(root, fB.getRewriteRule("B AND B", "B", "idempotent"));
+		
+		assertEquals(root,expected);
 	}
 
 	@Test 

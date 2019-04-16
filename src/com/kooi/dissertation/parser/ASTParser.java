@@ -31,11 +31,11 @@ import com.kooi.dissertation.syntaxtree.UnaryOperator;
 public class ASTParser implements Serializable{
 	
 	//fields
-	private Signature context;
+	private Signature sig;
 	
 	//constructor
 	public ASTParser(Signature context) {
-		this.context = context;
+		this.sig = context;
 	}
 	
 	
@@ -83,7 +83,7 @@ public class ASTParser implements Serializable{
 		if(!n.isEmpty())
 			left = n.pop();
 		
-			Operator o = context.getOperator(s);
+			Operator o = sig.getOperator(s);
 			if(o instanceof BinaryOperator)
 				n.push(new ASTNode(s,left,right,o.getReturnType(),NodeType.OPERATOR));
 			else {
@@ -112,6 +112,9 @@ public class ASTParser implements Serializable{
 		
 		
 		List<String> list = tokenizeString(infix);
+		
+		if(!verifyTerm(list))
+			throw new ParseException("Syntax Error");
 				
 		//Begin Shunting Yard
 
@@ -146,12 +149,12 @@ public class ASTParser implements Serializable{
 
 			}else {
 				
-				if(context.isOperator(s)) {
+				if(sig.isOperator(s)) {
 
-					Operator current = context.getOperator(s);
+					Operator current = sig.getOperator(s);
 
 					while(!opStack.isEmpty()) {
-						Operator last = context.getOperator(opStack.peek());
+						Operator last = sig.getOperator(opStack.peek());
 
 						//if the last op is opening parenthesis
 						if(last == null)
@@ -169,8 +172,8 @@ public class ASTParser implements Serializable{
 					opStack.push(s);
 
 				}else {
-					if(context.isVariable(s))
-						nodes.push(new ASTNode(s,null,null,context.getVariable(s),NodeType.VARIABLE));
+					if(sig.isVariable(s))
+						nodes.push(new ASTNode(s,null,null,sig.getVariable(s),NodeType.VARIABLE));
 					else
 						nodes.push(new ASTNode(s,null,null,DataType.CONST,NodeType.CONSTANT));
 				}
@@ -210,6 +213,9 @@ public class ASTParser implements Serializable{
 		Stack<String> opStack = new Stack<>(); //operator stack
 		List<String> list = tokenizeString(infix);
 		
+		if(!verifyTerm(list))
+			throw new ParseException("Syntax Error");
+		
 		//Begin Shunting Yard
 		
 		for(String s:list) {
@@ -243,12 +249,12 @@ public class ASTParser implements Serializable{
 				
 			}else {
 				
-				if(context.isOperator(s)) {
+				if(sig.isOperator(s)) {
 					
-					Operator current = context.getOperator(s);
+					Operator current = sig.getOperator(s);
 					
 					while(!opStack.isEmpty()) {
-						Operator last = context.getOperator(opStack.peek());
+						Operator last = sig.getOperator(opStack.peek());
 						
 						//if the last op is opening parenthesis
 						if(last == null)
@@ -304,7 +310,6 @@ public class ASTParser implements Serializable{
 	public String toInfix(String rpn) throws ParseException{
 		
 		
-		StringBuilder sb = new StringBuilder();
 		Stack<String> exprStack = new Stack<>();
 		
 		List<String> tokens = Arrays.asList(rpn.split(" "));
@@ -312,12 +317,12 @@ public class ASTParser implements Serializable{
 		for(int i =0;i<tokens.size();i++) {
 			String s = tokens.get(i);
 			
-			if(!context.isOperator(s)) { //if not operator
+			if(!sig.isOperator(s)) { //if not operator
 				exprStack.push(s);
 			}else {
 				
 				//if unary
-				Operator o = context.getOperator(s);
+				Operator o = sig.getOperator(s);
 				
 				if(o instanceof UnaryOperator) {
 					String next = "("+o.getSymbol()+" "+exprStack.pop()+")";
@@ -347,7 +352,7 @@ public class ASTParser implements Serializable{
 	 * Method to tokenize a string based on the operators. 
 	 * 
 	 * e.g
-	 * "12+2-2" -> {"12","+","2","2","2"}
+	 * "12+2-2" -> {"12","+","2","-","2"}
 	 * 
 	 * 
 	 * @param s String to split
@@ -361,7 +366,7 @@ public class ASTParser implements Serializable{
 		//build the regex
 		StringBuilder regex = new StringBuilder();
 		
-		for(String c: context.getOperatorSet()) {
+		for(String c: sig.getOperatorSet()) {
 			if(isMetaCharacter(c))
 				regex.append("(\\"+c+")|"); //escape the special character
 			else
@@ -376,6 +381,26 @@ public class ASTParser implements Serializable{
 		String[] arr = s.split("((?<=("+regex.toString()+"))|(?=("+regex.toString()+")))");
 
 		return Arrays.asList(arr);
+	}
+	
+	
+	
+	private boolean verifyTerm(List<String> tokens) {
+		
+		for(int i=0;i<tokens.size();i++) {
+			String t = tokens.get(i);
+			
+			if(sig.isOperator(t)) {
+				Operator o = sig.getOperator(t);
+				
+				if(o instanceof BinaryOperator) {
+					if(i == 0 || i == tokens.size()-1 || sig.isOperator(tokens.get(i-1)) ||tokens.get(i-1).equals("(") || tokens.get(i+1).equals(")") ||  (sig.isOperator(tokens.get(i+1)) && sig.getOperator(tokens.get(i+1)) instanceof BinaryOperator) ) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	

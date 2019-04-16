@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import com.kooi.dissertation.parser.ParseException;
+import com.kooi.dissertation.rewriter.RewriteException;
 import com.kooi.dissertation.rewriter.SearchEngine;
 import com.kooi.dissertation.rewriter.SearchNode;
 import com.kooi.dissertation.rewriter.SearchResult;
@@ -155,6 +156,9 @@ public class SearchWindow extends JFrame {
 				}catch(NumberFormatException e2) {
 					JOptionPane.showMessageDialog(SearchWindow.this, "Bound must be a number greater than 0.","Invalid values",JOptionPane.ERROR_MESSAGE);
 					
+				} catch (RewriteException e1) {
+					JOptionPane.showMessageDialog(SearchWindow.this, "Error during rewriting, "+e1.getMessage(),"Rewrite Error",JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
 		});

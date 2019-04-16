@@ -29,8 +29,9 @@ public class SearchEngine {
 	 * @param initialTerm root of the tree
 	 * @param bound maximum depth
 	 * @return root node of the search tree
+	 * @throws RewriteException 
 	 */
-	public SearchNode buildSearchTree(Node initialTerm,int bound) {
+	public SearchNode buildSearchTree(Node initialTerm,int bound) throws RewriteException {
 		
 		SearchNode root = new SearchNode(engine.copy(initialTerm),null,"");
 		
@@ -50,8 +51,9 @@ public class SearchEngine {
 	 * @param goalTerm
 	 * @param bound
 	 * @return a SearchResult object
+	 * @throws RewriteException 
 	 */
-	public SearchResult searchTerm(Node initialTerm, Node goalTerm, int bound) {
+	public SearchResult searchTerm(Node initialTerm, Node goalTerm, int bound) throws RewriteException {
 		
 		SearchNode searchRoot = buildSearchTree(initialTerm,bound);
 	
@@ -90,7 +92,7 @@ public class SearchEngine {
 	}
 	
 	//use a bounded dfs to build a search tree
-	private void buildUtil(SearchNode sr, int bound,int curB) {
+	private void buildUtil(SearchNode sr, int bound,int curB) throws RewriteException {
 		
 		if(curB > bound)
 			return;

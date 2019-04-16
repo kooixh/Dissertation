@@ -279,6 +279,20 @@ public class ParserTest {
 		String expectedPostFix = "x y + succ";
 		assertEquals(expectedPostFix,postFix);
 	}
+	@Test
+	public void testInfixToRPN15() throws ParseException{
+		String infix = "y+succ(x)";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "y x succ +";
+		assertEquals(expectedPostFix,postFix);
+	}
+	@Test
+	public void testInfixToRPN16() throws ParseException {
+		String infix = "True + !!False";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "True False ! ! +";
+		assertEquals(expectedPostFix,postFix);
+	}
 	
 	@Test(expected = ParseException.class)
 	public void testInfixToRPNException1() throws ParseException {
@@ -335,6 +349,60 @@ public class ParserTest {
 		assertEquals(expectedPostFix,postFix);
 	}
 	
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException6() throws ParseException {
+		
+		String infix = "2+-4*2";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException7() throws ParseException {
+		
+		String infix = "2+-+4*2";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException8() throws ParseException {
+		
+		String infix = "succ(2)+-+4*2";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException9() throws ParseException {
+		
+		String infix = "2+(-2+3)";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException10() throws ParseException {
+		
+		String infix = "2+2(-2+3)";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInfixToRPNException11() throws ParseException {
+		
+		String infix = "2+2-(2+3)+";
+		String postFix = parser.parseRPN(infix);
+		String expectedPostFix = "";
+		assertEquals(expectedPostFix,postFix);
+	}
 	
 	 // The suite of tests to test parsing infix notation into AST
 	
