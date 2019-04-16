@@ -35,7 +35,6 @@ public class DriverProgram {
 		opsB.add(new BinaryOperator("OR",2,DataType.BOOLEAN));
 		opsB.add(new UnaryOperator("NOT",1,DataType.BOOLEAN));
 
-		
 		HashMap<String,DataType> variablesB = new HashMap<>();
 		variablesB.put("T",DataType.BOOLEAN);
 		variablesB.put("F",DataType.BOOLEAN);
@@ -44,29 +43,14 @@ public class DriverProgram {
 		Signature cBool = new Signature(opsB,variablesB);
 		ASTParser boolP = new ASTParser(cBool);
 		
-		RewriteRuleFactory fB = new RewriteRuleFactory(boolP);
-		
-		Set<RewriteRule> rulesB = new HashSet<>();
-		
-		rulesB.add(fB.getRewriteRule("NOT NOT B", "B", "double negation"));
-		rulesB.add(fB.getRewriteRule("B AND B", "B", "idempotent"));
-		rulesB.add(fB.getRewriteRule("True OR B", "True", "OR-identity"));
-		rulesB.add(fB.getRewriteRule("B OR True", "True", "OR-identity"));
-		rulesB.add(fB.getRewriteRule("False OR False", "False", "idempotent"));
-		rulesB.add(fB.getRewriteRule("B AND False", "False", "AND-identity"));
-		rulesB.add(fB.getRewriteRule("False AND B", "False", "AND-identity"));
 
-		RewriteEngine r = new RewriteEngine(rulesB,boolP);
 		try {
-			
-			Node n = boolP.parseAST("2 OR AND OR 2");
-			
+			Node n = boolP.parseAST("False AND NOT True");
 			prettyPrint(n);
 
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	static void trigoTest() {
@@ -166,9 +150,8 @@ public class DriverProgram {
 			}
 			System.out.println("\n\n");
 			
-			String s = "B AND B";
 
-			RewriteResult res = r.rewrite(s);
+			RewriteResult res = r.rewrite("True AND (NOT NOT False OR True) AND (False OR True)");
 			
 			System.out.println("Initial term: "+res.getInitialTerm());
 			System.out.println("Steps: "+res.getListOfSteps().size());
@@ -214,8 +197,7 @@ public class DriverProgram {
 		
 		
 		try {
-			
-			
+				
 			String s = "(succ(10)+ ((succ(0) * succ(1))))";
 			
 			prettyPrint(p.parseAST(s));
@@ -249,13 +231,12 @@ public class DriverProgram {
 		RewriteRuleFactory f = new RewriteRuleFactory(p);
 		rules.add(f.getRewriteRule("x+0", "x", "adding zero rule"));
 		rules.add(f.getRewriteRule("0+x", "x", "adding zero rule"));
-		//rules.add(f.getRewriteRule("succ(x)+y", "succ(x+y)", "succ add rule"));
+		rules.add(f.getRewriteRule("succ(x)+y", "succ(x+y)", "succ add rule"));
 		rules.add(f.getRewriteRule("succ(x)*succ(y)", "x*y", "succ multiply rule"));
 		rules.add(f.getRewriteRule("x*0", "0", "multiply zero rule"));
 		rules.add(f.getRewriteRule("0*x", "0", "multiply zero rule"));
 		rules.add(f.getRewriteRule("x*1", "x", "multiply one rule"));
 		rules.add(f.getRewriteRule("1*x", "x", "multiply one rule"));
-		rules.add(f.getRewriteRule("succ(x+y)", "succ(x)+succ(y)", "succ test rule"));
 		
 		RewriteEngine r = new RewriteEngine(rules,p);
 		
@@ -269,8 +250,7 @@ public class DriverProgram {
 			}
 			System.out.println("\n\n");
 			
-			String s = "succ((x+10)+x)";
-			RewriteResult res = r.rewrite(s);
+			RewriteResult res = r.rewrite("succ(1) * (succ(10) + ((succ(0 + 0) * succ(1))) )");
 			
 			System.out.println("Initial term: "+res.getInitialTerm());
 			System.out.println("Steps: "+res.getListOfSteps().size());
@@ -449,8 +429,8 @@ public class DriverProgram {
 		
 		//treeTest();
 		//trigoTest();
-		mathTest();
-		//booleanTest();
+		//mathTest();
+		booleanTest();
 		//searchTest();
 		//parsingTest();
 		//indvRewriteTest();

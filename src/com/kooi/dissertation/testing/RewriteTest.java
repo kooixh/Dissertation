@@ -147,9 +147,9 @@ public class RewriteTest {
 	@Test
 	public void testRewrite5()throws ParseException, RewriteException {
 		
-		String input = "succ(succ(0)) +x";
+		String input = "succ(succ(0)) +z";
 		String output = r.rewritePostfix(input);
-		String expected = "x succ succ";
+		String expected = "z succ succ";
 		
 		assertEquals(expected,output);
 	}
@@ -185,9 +185,9 @@ public class RewriteTest {
 	@Test
 	public void testRewrite9() throws ParseException, RewriteException{
 		
-		String input = "0+succ(0)*succ(0)+x";
+		String input = "0+succ(0)*succ(0)+z";
 		String output = r.rewritePostfix(input);
-		String expected = "x";
+		String expected = "z";
 		
 		assertEquals(expected,output);
 	}

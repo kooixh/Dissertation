@@ -157,15 +157,12 @@ public class RewriteEngine implements Serializable{
 	 */
 	public RewriteResult rewrite(String infix) throws ParseException,RewriteException{
 		
-		
-		
 		int c = 0; //total iteration, prevents infinite
 		
 		Node root = parser.parseAST(infix);
 		
 		if(!checkTerm(root))
-			throw new RewriteException("Term to rewrite cannot contain declared variable.");
-		
+			throw new RewriteException("Term to rewrite cannot contain declared variable.");		
 		boolean flag = false;  //if flag is false then cannot be rewritten any further
 		StringBuilder lastRule;
 		List<RewriteStep> steps = new ArrayList<>();
@@ -182,8 +179,6 @@ public class RewriteEngine implements Serializable{
 			
 			c++;
 		}while(flag && c<MAX_ITERATION);
-		
-		
 		
 		if(c == MAX_ITERATION)
 			throw new RewriteException("Max Itertion reached, possible infinite rewrite");
@@ -233,8 +228,7 @@ public class RewriteEngine implements Serializable{
 		}
 		
 		return false;
-		
-		
+
 		
 	}
 	
@@ -363,7 +357,6 @@ public class RewriteEngine implements Serializable{
 		}
 		swap(m.getLeft(),vars);
 		swap(m.getRight(),vars);
-
 	}
 	
 	

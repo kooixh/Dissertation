@@ -397,11 +397,9 @@ public class HomeScreen extends JFrame {
 				
 				@Override
 			    public void mouseReleased(MouseEvent e) 
-			    {    
-					
+			    {    		
 					Object[] options = {"Okay",
                     "Delete variable!"};
-					
 					//default icon, custom title
 					int n = JOptionPane.showOptionDialog(
 					    HomeScreen.this,

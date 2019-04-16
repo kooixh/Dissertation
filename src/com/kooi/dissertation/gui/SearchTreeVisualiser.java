@@ -152,7 +152,6 @@ public class SearchTreeVisualiser extends JFrame{
 	
 	
 	private void buildGraph() throws ParseException {
-		//SearchNode searchRoot = result.getSearchTree();
 		mxICell graphRoot = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(root.getTermNode())), 250, 250, 80, 30);
 		
 		graph.updateCellSize(graphRoot);
