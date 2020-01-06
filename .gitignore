@@ -74,6 +74,7 @@ fabric.properties
 *.iml
 .idea/*
 
+bin/
 
 # App ignore
 saves/
