@@ -1,4 +1,4 @@
-package com.kooixiuhong.rewritesystem.app.gui;
+package com.kooixiuhong.rewritesystem.app.configs;
 
 import com.kooixiuhong.rewritesystem.app.parser.ASTParser;
 import com.kooixiuhong.rewritesystem.app.parser.Signature;

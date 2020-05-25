@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class AddRule extends JFrame {
+public class RuleAddingPanel extends JFrame {
 
     private JPanel contentPane;
     private JTextField lhsTextField;
@@ -24,11 +24,10 @@ public class AddRule extends JFrame {
     /**
      * Create the frame.
      */
-    public AddRule(HomeScreen homeScreen) {
+    public RuleAddingPanel(HomeScreen homeScreen) {
 
-        home = homeScreen;
-
-        rewriteRuleFactory = new RewriteRuleFactory(homeScreen.getParser());
+        this.home = homeScreen;
+        this.rewriteRuleFactory = new RewriteRuleFactory(homeScreen.getParser());
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
@@ -36,33 +35,31 @@ public class AddRule extends JFrame {
             }
         });
 
-
         setBounds(100, 100, 450, 300);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 
         //add rule button
-
         addBtn = new JButton("Add");
         addBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
                 if (lhsTextField.getText().equals("") || rhsTextField.getText().equals("")
                         || nameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(AddRule.this,
+                    JOptionPane.showMessageDialog(RuleAddingPanel.this,
                             "Fields cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
                 } else {
                     RewriteRule rule = rewriteRuleFactory.getRewriteRule(lhsTextField.getText(),
                             rhsTextField.getText(), nameField.getText());
                     if (rule == null) {
-                        JOptionPane.showMessageDialog(AddRule.this,
+                        JOptionPane.showMessageDialog(RuleAddingPanel.this,
                                 "An error is encountered during parsing, check for mismatch parenthesis.",
                                 "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                     } else {
                         home.getEngine().addRule(rule);
                         home.updateUI();
-                        AddRule.this.dispose();
+                        RuleAddingPanel.this.dispose();
                     }
                 }
             }
@@ -70,7 +67,6 @@ public class AddRule extends JFrame {
 
 
         //lhs field
-
         JPanel panelLhs = new JPanel();
         lhsTextField = new JTextField(10);
         panelLhs.setLayout(new BoxLayout(panelLhs, BoxLayout.X_AXIS));
@@ -79,9 +75,7 @@ public class AddRule extends JFrame {
         panelLhs.add(lhsLab);
         panelLhs.add(lhsTextField);
 
-
         //rhs field
-
         JPanel panelRhs = new JPanel();
         rhsTextField = new JTextField(10);
         panelRhs.setLayout(new BoxLayout(panelRhs, BoxLayout.X_AXIS));

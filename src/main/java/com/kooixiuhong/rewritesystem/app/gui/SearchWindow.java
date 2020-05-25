@@ -32,7 +32,7 @@ public class SearchWindow extends JFrame {
     /**
      * Create the frame.
      */
-    public SearchWindow(InteractPanel interactPanel, HomeScreen homeScreen) {
+    public SearchWindow(InteractionPanel interactionPanel, HomeScreen homeScreen) {
 
         //init
         this.home = homeScreen;
@@ -101,18 +101,18 @@ public class SearchWindow extends JFrame {
                     } else {
                         SearchResult result = sEngine.searchTerm(initTermNode, goalTermNode, bound);
                         if (result.getResult() == null) {
-                            interactPanel.setResultArea("Term is not reachable");
+                            interactionPanel.setResultArea("Term is not reachable");
                         } else {
                             StringBuilder sb = new StringBuilder();
                             sb.append("Reachable!\n");
                             sb.append(initialTermField.getText()).append("\n");
                             sb.append(buildResultText(result));
-                            interactPanel.setResultArea(sb.toString());
+                            interactionPanel.setResultArea(sb.toString());
 
                         }
                         //thread for building the visualiser
                         (new Thread(() -> {
-                            SearchTreeVisualiser stv = new SearchTreeVisualiser(home, result.getSearchTree());
+                            SearchTreeVisualisationFrame stv = new SearchTreeVisualisationFrame(home, result.getSearchTree());
                             stv.setVisible(true);
                         })).start();
                         SearchWindow.this.dispose();

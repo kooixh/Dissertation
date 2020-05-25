@@ -23,7 +23,7 @@ import java.util.Map;
  * @author Kooi
  * @date 21th March 2019
  */
-public class SearchTreeVisualiser extends JFrame {
+public class SearchTreeVisualisationFrame extends JFrame {
 
 
     //graphs components
@@ -36,7 +36,7 @@ public class SearchTreeVisualiser extends JFrame {
     private HomeScreen home;
     private SearchNode root;
 
-    public SearchTreeVisualiser(final HomeScreen home, SearchNode root) {
+    public SearchTreeVisualisationFrame(final HomeScreen home, SearchNode root) {
 
         this.home = home;
         this.root = root;
@@ -62,7 +62,7 @@ public class SearchTreeVisualiser extends JFrame {
         try {
             buildGraph();
         } catch (ParseException e1) {
-            JOptionPane.showMessageDialog(SearchTreeVisualiser.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(SearchTreeVisualisationFrame.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
             e1.printStackTrace();
         }
 
@@ -96,7 +96,7 @@ public class SearchTreeVisualiser extends JFrame {
                             JOptionPane.showMessageDialog(null, sb.toString());
                         }
                     } catch (ParseException pe) {
-                        JOptionPane.showMessageDialog(SearchTreeVisualiser.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(SearchTreeVisualisationFrame.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                         pe.printStackTrace();
                     }
                 }

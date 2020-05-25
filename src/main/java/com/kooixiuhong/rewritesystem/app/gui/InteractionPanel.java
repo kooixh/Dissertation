@@ -13,7 +13,7 @@ import com.kooixiuhong.rewritesystem.app.syntaxtree.Node;
 import javax.swing.*;
 import java.awt.*;
 
-public class InteractPanel extends JPanel {
+public class InteractionPanel extends JPanel {
 
     //components
     private JButton addRuleBtn;
@@ -39,7 +39,7 @@ public class InteractPanel extends JPanel {
     /**
      * Create the panel.
      */
-    public InteractPanel(HomeScreen homeScreen, RewriteEngine rewriteEngine) {
+    public InteractionPanel(HomeScreen homeScreen, RewriteEngine rewriteEngine) {
 
         home = homeScreen;
         this.rewriteEngine = rewriteEngine;
@@ -48,21 +48,21 @@ public class InteractPanel extends JPanel {
         addRuleBtn = new JButton("Add Rule");
         addRuleBtn.addActionListener(e -> {
 
-            AddRule ar = new AddRule(home);
+            RuleAddingPanel ar = new RuleAddingPanel(home);
             ar.showWindow();
         });
 
 
         addOpBtn = new JButton("Add Operator");
         addOpBtn.addActionListener(e -> {
-            AddOperator ao = new AddOperator(home);
+            OperatorAddingFrame ao = new OperatorAddingFrame(home);
             ao.showWindow();
         });
 
 
         addVarBtn = new JButton("Add Variable");
         addVarBtn.addActionListener(e -> {
-            AddVariable av = new AddVariable(home);
+            VariableAddingPanel av = new VariableAddingPanel(home);
             av.showWindow();
         });
 
@@ -105,10 +105,10 @@ public class InteractPanel extends JPanel {
 
 
                 if (rewriteField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(InteractPanel.this, "Field cannot be empty, enter a term to be rewritten.", "Missing values", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(InteractionPanel.this, "Field cannot be empty, enter a term to be rewritten.", "Missing values", JOptionPane.ERROR_MESSAGE);
 
                 } else {
-                    RewriteResult o = InteractPanel.this.rewriteEngine.rewrite(rewriteField.getText());
+                    RewriteResult o = InteractionPanel.this.rewriteEngine.rewrite(rewriteField.getText());
                     currentResult = new StringBuilder();
                     currentResult.append("Initial term: ").append(rewriteField.getText()).append("\n");
 
@@ -123,10 +123,10 @@ public class InteractPanel extends JPanel {
                     resultArea.setText(currentResult.toString());
                 }
             } catch (ParseException pe) {
-                JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                 pe.printStackTrace();
             } catch (RewriteException re) {
-                JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during rewriting, " + re.getMessage(), "Rewrite Exception", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during rewriting, " + re.getMessage(), "Rewrite Exception", JOptionPane.ERROR_MESSAGE);
                 re.printStackTrace();
             }
         });
@@ -149,7 +149,7 @@ public class InteractPanel extends JPanel {
         intButton.addActionListener(e -> {
 
             //create a selector of all possible rules
-            Object[] rules = InteractPanel.this.rewriteEngine.getRules().toArray();
+            Object[] rules = InteractionPanel.this.rewriteEngine.getRules().toArray();
             RewriteRule r = (RewriteRule) JOptionPane.showInputDialog(
                     home,
                     "Choose a rule to apply\n",
@@ -169,21 +169,21 @@ public class InteractPanel extends JPanel {
                         intStat.setForeground(Color.GREEN);
                         resultArea.setText("");
                     } catch (ParseException e1) {
-                        JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                         e1.printStackTrace();
                     }
                 }
 
                 try {
-                    if (InteractPanel.this.rewriteEngine.singleSearch(interactiveRoot, r))
+                    if (InteractionPanel.this.rewriteEngine.singleSearch(interactiveRoot, r))
                         resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot)) + " By " + r.getName() + "\n");
                     else
                         resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot)) + " Rule does not apply!!" + "\n");
                 } catch (ParseException e1) {
-                    JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 } catch (RewriteException e1) {
-                    JOptionPane.showMessageDialog(InteractPanel.this, "Error during rewriting, " + e1.getMessage(), "Rewrite Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(InteractionPanel.this, "Error during rewriting, " + e1.getMessage(), "Rewrite Error", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
             }
@@ -194,7 +194,7 @@ public class InteractPanel extends JPanel {
 
         searchButton.addActionListener(e -> {
 
-            SearchWindow sw = new SearchWindow(InteractPanel.this, home);
+            SearchWindow sw = new SearchWindow(InteractionPanel.this, home);
             sw.setVisible(true);
         });
 
@@ -207,14 +207,14 @@ public class InteractPanel extends JPanel {
                 SearchNode searchRoot = se.buildSearchTree(n, BOUND);
 
                 (new Thread(() -> {
-                    SearchTreeVisualiser stv = new SearchTreeVisualiser(home, searchRoot);
+                    SearchTreeVisualisationFrame stv = new SearchTreeVisualisationFrame(home, searchRoot);
                     stv.setVisible(true);
                 })).start();
             } catch (ParseException e1) {
-                JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             } catch (RewriteException e1) {
-                JOptionPane.showMessageDialog(InteractPanel.this, "An error is encountered during rewriting, " + e1.getMessage(), "Rewrite Exception", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during rewriting, " + e1.getMessage(), "Rewrite Exception", JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
         });

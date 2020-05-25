@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddOperator extends JFrame {
+public class OperatorAddingFrame extends JFrame {
 
     private JPanel contentPane;
     private JTextField symbolField;
@@ -28,7 +28,7 @@ public class AddOperator extends JFrame {
     /**
      * Create the frame.
      */
-    public AddOperator(HomeScreen homeScreen) {
+    public OperatorAddingFrame(HomeScreen homeScreen) {
 
         typeMap = new HashMap<>();
 
@@ -55,18 +55,18 @@ public class AddOperator extends JFrame {
             String precedenceField = this.precedenceField.getText();
 
             if (symbol.equals("") || precedenceField.equals("")) {
-                JOptionPane.showMessageDialog(AddOperator.this, "Field cannot be empty.",
+                JOptionPane.showMessageDialog(OperatorAddingFrame.this, "Field cannot be empty.",
                         "Missing values", JOptionPane.ERROR_MESSAGE);
             } else if (symbol.equals("{") || symbol.equals("}") || symbol.equals("(") ||
                     symbol.equals(")") || symbol.equals("[") || symbol.equals("]")) {
-                JOptionPane.showMessageDialog(AddOperator.this,
+                JOptionPane.showMessageDialog(OperatorAddingFrame.this,
                         "Your operator symbol is invalid, cannot be any sort of brackets.",
                         "Invalid values", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
                     int precedence = Integer.parseInt(precedenceField);
                     if (precedence <= 0) {
-                        JOptionPane.showMessageDialog(AddOperator.this, "Precedence must be a number greater than 0.", "Invalid values", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(OperatorAddingFrame.this, "Precedence must be a number greater than 0.", "Invalid values", JOptionPane.ERROR_MESSAGE);
 
                     } else {
                         Operator operator;
@@ -78,10 +78,10 @@ public class AddOperator extends JFrame {
 
                         home.getSignature().addOperator(operator);
                         home.updateUI();
-                        AddOperator.this.dispose();
+                        OperatorAddingFrame.this.dispose();
                     }
                 } catch (NumberFormatException nfe) {
-                    JOptionPane.showMessageDialog(AddOperator.this,
+                    JOptionPane.showMessageDialog(OperatorAddingFrame.this,
                             "Precedence must be a number greater than 0.",
                             "Invalid values", JOptionPane.ERROR_MESSAGE);
                 }

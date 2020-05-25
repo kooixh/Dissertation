@@ -1,5 +1,6 @@
 package com.kooixiuhong.rewritesystem.app.gui;
 
+import com.kooixiuhong.rewritesystem.app.configs.Configuration;
 import com.kooixiuhong.rewritesystem.app.parser.ASTParser;
 import com.kooixiuhong.rewritesystem.app.parser.ParseException;
 import com.kooixiuhong.rewritesystem.app.parser.Signature;
@@ -33,14 +34,13 @@ import java.io.ObjectOutputStream;
  */
 public class HomeScreen extends JFrame {
 
-
     //components
     private JPanel contentPane;
     private JPanel rulePane;
     private JPanel sigPanel;
     private JPanel opPanel;
     private JPanel varPanel;
-    private InteractPanel interactPanel;
+    private InteractionPanel interactionPanel;
 
 
     //engine, signature and parser
@@ -96,10 +96,10 @@ public class HomeScreen extends JFrame {
                 engine = new RewriteEngine(parser);
 
 
-                HomeScreen.this.remove(interactPanel);
+                HomeScreen.this.remove(interactionPanel);
 
-                interactPanel = new InteractPanel(HomeScreen.this, engine);
-                HomeScreen.this.add(interactPanel, BorderLayout.CENTER);
+                interactionPanel = new InteractionPanel(HomeScreen.this, engine);
+                HomeScreen.this.add(interactionPanel, BorderLayout.CENTER);
                 HomeScreen.this.revalidate();
                 HomeScreen.this.repaint();
 
@@ -161,10 +161,10 @@ public class HomeScreen extends JFrame {
                     HomeScreen.this.engine = c.getRewriteEngine();
                     HomeScreen.this.parser = new ASTParser(HomeScreen.this.signature);
 
-                    HomeScreen.this.remove(interactPanel);
+                    HomeScreen.this.remove(interactionPanel);
 
-                    interactPanel = new InteractPanel(HomeScreen.this, engine);
-                    HomeScreen.this.add(interactPanel, BorderLayout.CENTER);
+                    interactionPanel = new InteractionPanel(HomeScreen.this, engine);
+                    HomeScreen.this.add(interactionPanel, BorderLayout.CENTER);
                     HomeScreen.this.revalidate();
                     HomeScreen.this.repaint();
 
@@ -251,9 +251,9 @@ public class HomeScreen extends JFrame {
 
         sidePane.add(ruleScrollPane);
 
-        interactPanel = new InteractPanel(this, engine);
+        interactionPanel = new InteractionPanel(this, engine);
 
-        contentPane.add(interactPanel, BorderLayout.CENTER);
+        contentPane.add(interactionPanel, BorderLayout.CENTER);
         contentPane.add(sidePane, BorderLayout.EAST);
         setMinimumSize(new Dimension(700, 500));
 

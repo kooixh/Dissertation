@@ -14,14 +14,8 @@ public class BinaryOperator extends AbstractOperator {
     }
 
     @Override
-    public int comparePrecedence(Operator o) {
-        if (o instanceof BinaryOperator) {
-            return Integer.compare(this.precedence, o.getPrecedence());
-        } else {
-            //compare precedence using the other operator,
-            return -1; //negate cause from the other side
-        }
+    public int comparePrecedence(Operator operator) {
+        return (operator instanceof BinaryOperator) ? Integer.compare(this.precedence, operator.getPrecedence()) : -1;
     }
-
 
 }

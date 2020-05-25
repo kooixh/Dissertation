@@ -27,13 +27,10 @@ public final class RewriteResult {
         this.finalTerm = copy(finalTerm);
     }
 
-    private Node copy(Node n) {
-
-        if (n == null)
+    private Node copy(Node node) {
+        if (node == null)
             return null;
-        Node newNode = new ASTNode(n.getValue(), copy(n.getLeft()), copy(n.getRight()), n.getType(), n.getNodeType());
-        return newNode;
-
+        return new ASTNode(node.getValue(), copy(node.getLeft()), copy(node.getRight()), node.getType(), node.getNodeType());
     }
 
 }

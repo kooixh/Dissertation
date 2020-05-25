@@ -20,15 +20,15 @@ public class RewriteRuleFactory {
      * This methods generates a rewrite rule given infix string of lhs and rhs, rule also
      * requires a name.
      *
-     * @param l    expression of lhs of rule in infix.
-     * @param r    expression of rhs of rule in infix.
+     * @param leftHandSide    expression of lhs of rule in infix.
+     * @param rightHandSide    expression of rhs of rule in infix.
      * @param name name of the rule.
-     * @return a rewrite rule from l's AST to r's AST
+     * @return a rewrite rule from leftHandSide's AST to rightHandSide's AST
      */
-    public RewriteRule getRewriteRule(String l, String r, String name) {
+    public RewriteRule getRewriteRule(String leftHandSide, String rightHandSide, String name) {
         try {
-            Node lhs = parser.parseAST(l);
-            Node rhs = parser.parseAST(r);
+            Node lhs = parser.parseAST(leftHandSide);
+            Node rhs = parser.parseAST(rightHandSide);
             return new RewriteRule(lhs, rhs, name);
         } catch (ParseException e) {
             e.printStackTrace();

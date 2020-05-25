@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddVariable extends JFrame {
+public class VariableAddingPanel extends JFrame {
 
     private JPanel contentPane;
     private JTextField symbolField;
@@ -22,10 +22,7 @@ public class AddVariable extends JFrame {
     private HomeScreen home;
 
 
-    /**
-     * Create the frame.
-     */
-    public AddVariable(HomeScreen homeScreen) {
+    public VariableAddingPanel(HomeScreen homeScreen) {
 
         home = homeScreen;
 
@@ -54,12 +51,12 @@ public class AddVariable extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 if (symbolField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(AddVariable.this,
+                    JOptionPane.showMessageDialog(VariableAddingPanel.this,
                             "Field cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
                 } else {
                     home.getSignature().addVariable(symbolField.getText(), typeMap.get(type.getSelectedItem()));
                     home.updateUI();
-                    AddVariable.this.dispose();
+                    VariableAddingPanel.this.dispose();
                 }
             }
         });

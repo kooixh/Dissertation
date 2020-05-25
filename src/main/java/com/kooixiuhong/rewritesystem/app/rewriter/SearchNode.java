@@ -16,7 +16,6 @@ import java.util.List;
 @Getter
 public class SearchNode {
 
-
     private Node termNode;
     private SearchNode parentNode;
     private String prevRule;
@@ -29,12 +28,6 @@ public class SearchNode {
         this.childNodes = new ArrayList<>();
     }
 
-
-    /**
-     * Add a new child
-     *
-     * @param n
-     */
     public void addChild(SearchNode n) {
         this.childNodes.add(n);
     }

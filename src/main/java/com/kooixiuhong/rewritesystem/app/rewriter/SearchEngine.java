@@ -23,11 +23,8 @@ public class SearchEngine {
      * @throws RewriteException
      */
     public SearchNode buildSearchTree(Node initialTerm, int bound) throws RewriteException {
-
         SearchNode root = new SearchNode(engine.copy(initialTerm), null, "");
-
         buildUtil(root, bound, 0);
-
         return root;
     }
 
@@ -77,7 +74,6 @@ public class SearchEngine {
         for (SearchNode c : searchRoot.getChildNodes()) {
             buildUtil(c, bound, curB + 1);
         }
-
     }
 
 }
