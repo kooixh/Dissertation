@@ -82,8 +82,5 @@ bin/
 # App ignore
 saves/*
 
-# Dependency
-src/main/java/com/mxgraph/*
-
 # MacOS
 .DS_Store

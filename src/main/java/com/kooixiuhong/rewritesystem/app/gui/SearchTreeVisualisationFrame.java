@@ -36,7 +36,7 @@ public class SearchTreeVisualisationFrame extends JFrame {
     private HomeScreen home;
     private SearchNode root;
 
-    public SearchTreeVisualisationFrame(final HomeScreen home, SearchNode root) {
+    public SearchTreeVisualisationFrame(HomeScreen home, SearchNode root) {
 
         this.home = home;
         this.root = root;
