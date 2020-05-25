@@ -80,7 +80,7 @@ target/*
 bin/
 
 # App ignore
-.saves/*
+saves/*
 
 # Dependency
 src/main/java/com/mxgraph/*
