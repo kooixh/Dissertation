@@ -70,6 +70,9 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+# Maven
+target/*
+
 # IDE
 *.iml
 .idea/*
@@ -77,4 +80,10 @@ fabric.properties
 bin/
 
 # App ignore
-saves/
+.saves/*
+
+# Dependency
+src/main/java/com/mxgraph/*
+
+# MacOS
+.DS_Store
