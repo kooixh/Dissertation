@@ -25,7 +25,6 @@ import java.util.Set;
  */
 public class RewriteEngine implements Serializable {
 
-
     @Getter private Set<RewriteRule> rules;
     private Map<String, List<RewriteRule>> ruleMap;
     private ASTParser parser;
@@ -34,7 +33,7 @@ public class RewriteEngine implements Serializable {
     public RewriteEngine(Set<RewriteRule> rules, ASTParser parser) {
         this.parser = parser;
         this.rules = rules;
-        ruleMap = new HashMap<>();
+        this.ruleMap = new HashMap<>();
         for (RewriteRule rule : this.rules) {
             if (!ruleMap.containsKey(rule.getLhs().getValue())) {
                 ruleMap.put(rule.getLhs().getValue(), new ArrayList<>());
@@ -98,9 +97,10 @@ public class RewriteEngine implements Serializable {
         } while (flag && count < MAX_ITERATION);
 
         if (count == MAX_ITERATION)
-            throw new RewriteException("Max Itertion reached, possible infinite rewrite");
+            throw new RewriteException("Max Iteration reached, possible infinite rewrite");
 
         return root;
+
     }
 
     /**
@@ -164,8 +164,6 @@ public class RewriteEngine implements Serializable {
             return true;
         }
         return false;
-
-
     }
 
     /**
@@ -210,26 +208,26 @@ public class RewriteEngine implements Serializable {
             return term == null && rule == null; //they match if both are null
         }
         //if is variable then just need to match type and add to var list.
-        if (rule.getNodeType() == NodeType.VARIABLE) {
+        if (rule.getNodeType().equals(NodeType.VARIABLE)) {
             //if variable appeared before, check if current match prev
             if (vars.containsKey(rule.getValue())) {
                 return term.equals(vars.get(rule.getValue()));
             } else {
                 //if variable type is compatible with operator return type
-                if (term.getNodeType() == NodeType.OPERATOR && term.getType() == rule.getType()) {
+                if (term.getNodeType().equals(NodeType.OPERATOR) && term.getType().equals(rule.getType())) {
                     vars.put(rule.getValue(), term);
                     return true;
-                } else if (term.getNodeType() == NodeType.CONSTANT) {
+                } else if (term.getNodeType().equals(NodeType.CONSTANT)) {
                     vars.put(rule.getValue(), term);
                     return true;
-                } else if (term.getNodeType() == NodeType.VARIABLE && term.getType() == rule.getType()) {
+                } else if (term.getNodeType().equals(NodeType.VARIABLE) && term.getType().equals(rule.getType())) {
                     vars.put(rule.getValue(), term);
                     return true;
                 }
                 return false;
             }
         } else { //if rule is not a variable then must match symbol
-            if (term.getNodeType() == NodeType.VARIABLE) {
+            if (term.getNodeType().equals(NodeType.VARIABLE)) {
                 throw new RewriteException("Term to rewrite cannot contain declared variable.");
             }
             if (rule.getValue().equals(term.getValue())) //recursively match the sub-expression
@@ -300,12 +298,12 @@ public class RewriteEngine implements Serializable {
         //try all the possible rule that can be match
         if (ruleMap.get(node.getValue()) == null)
             return false;
-        for (RewriteRule r : ruleMap.get(node.getValue())) {
+        for (RewriteRule rule : ruleMap.get(node.getValue())) {
             Map<String, Node> vars = new HashMap<>();
-            if (match(node, r.getLhs(), vars)) {
-                substitute(node, r.getRhs(), vars);
+            if (match(node, rule.getLhs(), vars)) {
+                substitute(node, rule.getRhs(), vars);
                 if (ruleName != null)
-                    ruleName.append(r.getName());
+                    ruleName.append(rule.getName());
                 return true;
             }
         }
