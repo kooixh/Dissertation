@@ -15,8 +15,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -42,15 +40,14 @@ public class HomeScreen extends JFrame {
     private JPanel varPanel;
     private InteractionPanel interactionPanel;
 
-
     //engine, signature and parser
     @Getter private RewriteEngine engine;
     @Getter private ASTParser parser;
     @Getter private Signature signature;
 
-
     //file paths
-    private final String SAVE_PATH = "saves";
+    private static final String SAVE_PATH = "saves";
+    private static final String SAVES_FILE_EXTENSION = ".rwr";
 
     /**
      * Create the frame.
@@ -105,39 +102,31 @@ public class HomeScreen extends JFrame {
 
                 updateUI();
             }
-
         });
 
         JButton saveBut = new JButton("Save");
 
         //create a save dialog and save file as .rwr file
-        saveBut.addActionListener(new ActionListener() {
+        saveBut.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(saveDir);
+            FileFilter filter = new FileNameExtensionFilter("Rewrite File", "rwr");
+            fileChooser.setFileFilter(filter);
+            if (fileChooser.showSaveDialog(HomeScreen.this) == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                StringBuilder path = new StringBuilder(file.toString());
+                if (!(path.toString()).endsWith(SAVES_FILE_EXTENSION))
+                    path.append(SAVES_FILE_EXTENSION);
+                try {
+                    ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path.toString()));
+                    out.writeObject(new Configuration(HomeScreen.this.engine, HomeScreen.this.parser, HomeScreen.this.signature));
+                    out.close();
+                    JOptionPane.showMessageDialog(null, "Saved at" + path.toString());
 
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setCurrentDirectory(saveDir);
-                FileFilter filter = new FileNameExtensionFilter("Rewrite File", "rwr");
-                fileChooser.setFileFilter(filter);
-                if (fileChooser.showSaveDialog(HomeScreen.this) == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-
-                    StringBuilder path = new StringBuilder(file.toString());
-
-                    if (!(path.toString()).endsWith(".rwr"))
-                        path.append(".rwr");
-
-                    try {
-                        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path.toString()));
-                        out.writeObject(new Configuration(HomeScreen.this.engine, HomeScreen.this.parser, HomeScreen.this.signature));
-                        out.close();
-                        JOptionPane.showMessageDialog(null, "Saved at" + path.toString());
-
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Problem writing configuration file.");
-                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Problem writing configuration file.");
                 }
-
             }
 
         });
@@ -230,29 +219,20 @@ public class HomeScreen extends JFrame {
 
         JLabel varLabel = new JLabel("Variables:");
         varLabel.setFont(new Font("Century Gothic", Font.BOLD, 14));
-
         varPanel.add(varLabel);
-
-
         sigPanel.add(varPanel);
 
-
         rulePane = new JPanel();
-
         rulePane.setLayout(new BoxLayout(rulePane, BoxLayout.Y_AXIS));
         JLabel ruleLabel = new JLabel("Rules:");
         ruleLabel.setFont(new Font("Century Gothic", Font.BOLD, 24));
         rulePane.add(ruleLabel);
 
-
         JScrollPane ruleScrollPane = new JScrollPane(rulePane);
         ruleScrollPane.setPreferredSize(new Dimension(200, 200));
-
-
         sidePane.add(ruleScrollPane);
 
         interactionPanel = new InteractionPanel(this, engine);
-
         contentPane.add(interactionPanel, BorderLayout.CENTER);
         contentPane.add(sidePane, BorderLayout.EAST);
         setMinimumSize(new Dimension(700, 500));
@@ -274,9 +254,7 @@ public class HomeScreen extends JFrame {
         rulePane.repaint();
 
         for (final String operatorSymbol : signature.getOperatorSet()) {
-
             StringBuilder opText = new StringBuilder();
-
             if (signature.getOperator(operatorSymbol) instanceof BinaryOperator) {
                 opText.append(": op1 \u2715 op2 \u2192 ");
                 opText.append(signature.getOperator(operatorSymbol).getReturnType());
@@ -284,36 +262,28 @@ public class HomeScreen extends JFrame {
                 opText.append(": op1 \u2192 ").append(signature.getOperator(operatorSymbol).getReturnType());
             }
 
-            JLabel l = new JLabel(operatorSymbol + opText.toString());
-            l.setFont(new Font("Century Gothic", Font.PLAIN, 12));
-
-            l.addMouseListener(new MouseAdapter() {
+            JLabel label = new JLabel(operatorSymbol + opText.toString());
+            label.setFont(new Font("Century Gothic", Font.PLAIN, 12));
+            label.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
-
                     Object[] options = {"Okay", "Delete Operator!"};
                     Operator operator = signature.getOperator(operatorSymbol);
 
-                    int n = JOptionPane.showOptionDialog(
-                            HomeScreen.this,
+                    int operatorInfo = JOptionPane.showOptionDialog(HomeScreen.this,
                             "Operator symbol: " + operatorSymbol + "\nType: " +
                                     ((operator instanceof BinaryOperator) ? "Binary" : "Unary") + "\nReturn type:"
                                     + operator.getReturnType() + "\nPrecedence: " + operator.getPrecedence(),
                             "Operator info",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
-
-                    if (n == 1) {
+                            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                    if (operatorInfo == 1) {
                         signature.deleteOperator(operatorSymbol);
                         updateUI();
                     }
                 }
             });
-            opPanel.add(l);
+            opPanel.add(label);
         }
 
         JSeparator jSeparator = new JSeparator();
@@ -325,10 +295,10 @@ public class HomeScreen extends JFrame {
         varPanel.add(varLabel);
 
         for (final String id : signature.getVariableSet()) {
-            JLabel l = new JLabel(id + ":" + signature.getVariable(id));
-            l.setFont(new Font("Century Gothic", Font.PLAIN, 12));
+            JLabel label = new JLabel(id + ":" + signature.getVariable(id));
+            label.setFont(new Font("Century Gothic", Font.PLAIN, 12));
 
-            l.addMouseListener(new MouseAdapter() {
+            label.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
@@ -339,12 +309,7 @@ public class HomeScreen extends JFrame {
                             HomeScreen.this,
                             "Varibale id: " + id + "\nType:" + signature.getVariable(id),
                             "Varibale info",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
-
+                            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
                     if (n == 1) {
                         signature.deleteVariable(id);
                         updateUI();
@@ -353,8 +318,7 @@ public class HomeScreen extends JFrame {
                 }
 
             });
-
-            varPanel.add(l);
+            varPanel.add(label);
         }
 
         rulePane.removeAll();
@@ -367,8 +331,8 @@ public class HomeScreen extends JFrame {
 
         for (final RewriteRule rule : engine.getRules()) {
             try {
-                final JLabel label = new JLabel(parser.toInfix(parser.postOrderTreverse(rule.getLhs())) +
-                        "\u27f6" + parser.toInfix(parser.postOrderTreverse(rule.getRhs())));
+                final JLabel label = new JLabel(parser.toInfix(parser.postOrderTraversal(rule.getLhs())) +
+                        "\u27f6" + parser.toInfix(parser.postOrderTraversal(rule.getRhs())));
                 label.setFont(new Font("Century Gothic", Font.PLAIN, 12));
 
                 label.addMouseListener(new MouseAdapter() {
@@ -377,17 +341,12 @@ public class HomeScreen extends JFrame {
                     public void mouseReleased(MouseEvent e) {
                         Object[] options = {"Okay", "Delete rule!"};
                         //default icon, custom title
-                        int n = JOptionPane.showOptionDialog(
+                        int rewriteRuleInfo = JOptionPane.showOptionDialog(
                                 HomeScreen.this,
                                 label.getText() + "\nRule name:" + rule.getName(),
                                 "Rewrite Rule info",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.INFORMATION_MESSAGE,
-                                null,
-                                options,
-                                options[0]);
-
-                        if (n == 1) {
+                                JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                        if (rewriteRuleInfo == 1) {
                             engine.deleteRule(rule);
                             updateUI();
                         }
@@ -395,7 +354,6 @@ public class HomeScreen extends JFrame {
                     }
 
                 });
-
                 rulePane.add(label);
             } catch (ParseException e) {
                 JOptionPane.showMessageDialog(HomeScreen.this, "An error is encountered during parsing, check for mismatch parenthesis.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);

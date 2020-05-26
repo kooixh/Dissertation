@@ -168,7 +168,7 @@ public class SearchWindow extends JFrame {
         while (!nodes.isEmpty()) {
             SearchNode curr = nodes.pop();
             trace.append("\u2b91Apply ").append(curr.getPrevRule()).append(" to get ")
-                    .append(home.getParser().toInfix(home.getParser().postOrderTreverse(curr.getTermNode())));
+                    .append(home.getParser().toInfix(home.getParser().postOrderTraversal(curr.getTermNode())));
             trace.append("\n");
         }
         return trace.toString();

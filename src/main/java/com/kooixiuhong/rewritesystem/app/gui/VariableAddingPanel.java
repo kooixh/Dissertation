@@ -47,20 +47,16 @@ public class VariableAddingPanel extends JFrame {
         setContentPane(contentPane);
 
         addBtn = new JButton("Add");
-        addBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                if (symbolField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(VariableAddingPanel.this,
-                            "Field cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    home.getSignature().addVariable(symbolField.getText(), typeMap.get(type.getSelectedItem()));
-                    home.updateUI();
-                    VariableAddingPanel.this.dispose();
-                }
+        addBtn.addActionListener(e -> {
+            if (symbolField.getText().equals("")) {
+                JOptionPane.showMessageDialog(VariableAddingPanel.this,
+                        "Field cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
+            } else {
+                home.getSignature().addVariable(symbolField.getText(), typeMap.get(type.getSelectedItem()));
+                home.updateUI();
+                VariableAddingPanel.this.dispose();
             }
         });
-
 
         //panel for symbol text field
         JPanel panelSymbol = new JPanel();
@@ -72,7 +68,6 @@ public class VariableAddingPanel extends JFrame {
 
         panelSymbol.add(symLab);
         panelSymbol.add(symbolField);
-
 
         //panel for return type
         JPanel typePanel = new JPanel();

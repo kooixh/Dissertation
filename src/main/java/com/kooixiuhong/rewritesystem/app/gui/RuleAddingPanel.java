@@ -42,25 +42,23 @@ public class RuleAddingPanel extends JFrame {
 
         //add rule button
         addBtn = new JButton("Add");
-        addBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        addBtn.addActionListener(e -> {
 
-                if (lhsTextField.getText().equals("") || rhsTextField.getText().equals("")
-                        || nameField.getText().equals("")) {
+            if (lhsTextField.getText().equals("") || rhsTextField.getText().equals("")
+                    || nameField.getText().equals("")) {
+                JOptionPane.showMessageDialog(RuleAddingPanel.this,
+                        "Fields cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
+            } else {
+                RewriteRule rule = rewriteRuleFactory.getRewriteRule(lhsTextField.getText(),
+                        rhsTextField.getText(), nameField.getText());
+                if (rule == null) {
                     JOptionPane.showMessageDialog(RuleAddingPanel.this,
-                            "Fields cannot be empty.", "Missing values", JOptionPane.ERROR_MESSAGE);
+                            "An error is encountered during parsing, check for mismatch parenthesis.",
+                            "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    RewriteRule rule = rewriteRuleFactory.getRewriteRule(lhsTextField.getText(),
-                            rhsTextField.getText(), nameField.getText());
-                    if (rule == null) {
-                        JOptionPane.showMessageDialog(RuleAddingPanel.this,
-                                "An error is encountered during parsing, check for mismatch parenthesis.",
-                                "Parsing Exception", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        home.getEngine().addRule(rule);
-                        home.updateUI();
-                        RuleAddingPanel.this.dispose();
-                    }
+                    home.getEngine().addRule(rule);
+                    home.updateUI();
+                    RuleAddingPanel.this.dispose();
                 }
             }
         });
@@ -85,15 +83,13 @@ public class RuleAddingPanel extends JFrame {
         panelRhs.add(rhsTextField);
 
 
-        //rule name
-
-        JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+        JPanel rulesNamePanel = new JPanel();
+        rulesNamePanel.setLayout(new BoxLayout(rulesNamePanel, BoxLayout.X_AXIS));
         JLabel nameLab = new JLabel("Rule name");
         nameLab.setFont(new Font("Century Gothic", Font.PLAIN, 14));
-        namePanel.add(nameLab);
+        rulesNamePanel.add(nameLab);
         nameField = new JTextField(10);
-        namePanel.add(nameField);
+        rulesNamePanel.add(nameField);
 
         lhsTextField.setMaximumSize(lhsTextField.getPreferredSize());
         rhsTextField.setMaximumSize(rhsTextField.getPreferredSize());
@@ -106,7 +102,7 @@ public class RuleAddingPanel extends JFrame {
         btnPanel.add(addBtn);
         contentPane.add(panelLhs);
         contentPane.add(panelRhs);
-        contentPane.add(namePanel);
+        contentPane.add(rulesNamePanel);
         contentPane.add(btnPanel);
         setContentPane(contentPane);
 

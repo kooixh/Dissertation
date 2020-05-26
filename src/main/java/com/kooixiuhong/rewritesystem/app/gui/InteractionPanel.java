@@ -33,7 +33,7 @@ public class InteractionPanel extends JPanel {
     private HomeScreen home;
 
     //constant
-    private final int BOUND = 100;
+    private static final int BOUND = 100;
 
 
     /**
@@ -41,38 +41,32 @@ public class InteractionPanel extends JPanel {
      */
     public InteractionPanel(HomeScreen homeScreen, RewriteEngine rewriteEngine) {
 
-        home = homeScreen;
+        this.home = homeScreen;
         this.rewriteEngine = rewriteEngine;
 
         //button to show the various windows
         addRuleBtn = new JButton("Add Rule");
         addRuleBtn.addActionListener(e -> {
-
-            RuleAddingPanel ar = new RuleAddingPanel(home);
-            ar.showWindow();
+            RuleAddingPanel ruleAddingPanel = new RuleAddingPanel(home);
+            ruleAddingPanel.showWindow();
         });
-
 
         addOpBtn = new JButton("Add Operator");
         addOpBtn.addActionListener(e -> {
-            OperatorAddingFrame ao = new OperatorAddingFrame(home);
-            ao.showWindow();
+            OperatorAddingFrame operatorAddingFrame = new OperatorAddingFrame(home);
+            operatorAddingFrame.showWindow();
         });
-
 
         addVarBtn = new JButton("Add Variable");
         addVarBtn.addActionListener(e -> {
-            VariableAddingPanel av = new VariableAddingPanel(home);
-            av.showWindow();
+            VariableAddingPanel variableAddingPanel = new VariableAddingPanel(home);
+            variableAddingPanel.showWindow();
         });
-
 
         //setting up the panel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         JPanel innerPane = new JPanel();
         innerPane.setLayout(new BoxLayout(innerPane, BoxLayout.X_AXIS));
-
         innerPane.add(addOpBtn);
         innerPane.add(addVarBtn);
         innerPane.add(addRuleBtn);
@@ -85,15 +79,11 @@ public class InteractionPanel extends JPanel {
 
 
         //input for string to rewrite
-
         rewriteField = new JTextField(20);
         rewriteField.setFont(new Font("Century Gothic", Font.PLAIN, 12));
         rewriteField.setMaximumSize(rewriteField.getPreferredSize());
         txtPane.add(rewriteField);
-
-
         rewriteButton = new JButton("Rewrite");
-
         rewriteButton.addActionListener(e -> {
             try {
                 //reset interactive mode
@@ -103,23 +93,20 @@ public class InteractionPanel extends JPanel {
                     interactiveRoot = null;
                 }
 
-
                 if (rewriteField.getText().equals("")) {
                     JOptionPane.showMessageDialog(InteractionPanel.this, "Field cannot be empty, enter a term to be rewritten.", "Missing values", JOptionPane.ERROR_MESSAGE);
-
                 } else {
                     RewriteResult o = InteractionPanel.this.rewriteEngine.rewrite(rewriteField.getText());
                     currentResult = new StringBuilder();
                     currentResult.append("Initial term: ").append(rewriteField.getText()).append("\n");
 
-
                     for (RewriteStep step : o.getListOfSteps()) {
-                        currentResult.append("\u2b91 ").append(home.getParser().toInfix(home.getParser().postOrderTreverse(step.getTermRoot())));
+                        currentResult.append("\u2b91 ").append(home.getParser().toInfix(home.getParser().postOrderTraversal(step.getTermRoot())));
                         currentResult.append(" By ").append(step.getRule());
                         currentResult.append("\n");
                     }
                     currentResult.append("\nFinal term: ")
-                            .append(home.getParser().toInfix(home.getParser().postOrderTreverse(o.getFinalTerm())));
+                            .append(home.getParser().toInfix(home.getParser().postOrderTraversal(o.getFinalTerm())));
                     resultArea.setText(currentResult.toString());
                 }
             } catch (ParseException pe) {
@@ -139,28 +126,19 @@ public class InteractionPanel extends JPanel {
         //analysis capabilities panel
         JPanel analysisPane = new JPanel();
         analysisPane.setLayout(new BoxLayout(analysisPane, BoxLayout.X_AXIS));
-
-        JButton intButton = new JButton("Interactive");
+        JButton interactiveButton = new JButton("Interactive");
 
         intStat = new JLabel("OFF");
         intStat.setForeground(Color.RED);
         intStat.setFont(new Font("Century Gothic", Font.PLAIN, 12));
 
-        intButton.addActionListener(e -> {
+        interactiveButton.addActionListener(e -> {
 
             //create a selector of all possible rules
             Object[] rules = InteractionPanel.this.rewriteEngine.getRules().toArray();
-            RewriteRule r = (RewriteRule) JOptionPane.showInputDialog(
-                    home,
-                    "Choose a rule to apply\n",
-                    "Choose rule to apply",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    rules,
-                    "");
-
-            if (r != null) {
-
+            RewriteRule rule = (RewriteRule) JOptionPane.showInputDialog(home, "Choose a rule to apply\n",
+                    "Choose rule to apply", JOptionPane.PLAIN_MESSAGE, null, rules, "");
+            if (rule != null) {
                 //if first interactive run, clear resArea and set on
                 if (interactiveRoot == null) {
                     try {
@@ -173,12 +151,11 @@ public class InteractionPanel extends JPanel {
                         e1.printStackTrace();
                     }
                 }
-
                 try {
-                    if (InteractionPanel.this.rewriteEngine.singleSearch(interactiveRoot, r))
-                        resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot)) + " By " + r.getName() + "\n");
+                    if (InteractionPanel.this.rewriteEngine.singleSearch(interactiveRoot, rule))
+                        resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTraversal(interactiveRoot)) + " By " + rule.getName() + "\n");
                     else
-                        resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTreverse(interactiveRoot)) + " Rule does not apply!!" + "\n");
+                        resultArea.append("\u2b91 " + home.getParser().toInfix(home.getParser().postOrderTraversal(interactiveRoot)) + " Rule does not apply!!" + "\n");
                 } catch (ParseException e1) {
                     JOptionPane.showMessageDialog(InteractionPanel.this, "An error is encountered during parsing, check for syntax errors.", "Parsing Exception", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
@@ -187,25 +164,22 @@ public class InteractionPanel extends JPanel {
                     e1.printStackTrace();
                 }
             }
-
         });
 
         JButton searchButton = new JButton("Search");
-
         searchButton.addActionListener(e -> {
 
             SearchWindow sw = new SearchWindow(InteractionPanel.this, home);
             sw.setVisible(true);
         });
 
-        JButton visButton = new JButton("Visualise");
+        JButton visualiseButton = new JButton("Visualise");
 
-        visButton.addActionListener(e -> {
+        visualiseButton.addActionListener(e -> {
             SearchEngine se = new SearchEngine(home.getEngine());
             try {
-                Node n = home.getParser().parseAST(rewriteField.getText());
-                SearchNode searchRoot = se.buildSearchTree(n, BOUND);
-
+                Node node = home.getParser().parseAST(rewriteField.getText());
+                SearchNode searchRoot = se.buildSearchTree(node, BOUND);
                 (new Thread(() -> {
                     SearchTreeVisualisationFrame stv = new SearchTreeVisualisationFrame(home, searchRoot);
                     stv.setVisible(true);
@@ -219,16 +193,15 @@ public class InteractionPanel extends JPanel {
             }
         });
 
-        analysisPane.add(intButton);
+        analysisPane.add(interactiveButton);
         analysisPane.add(intStat);
         analysisPane.add(searchButton);
-        analysisPane.add(visButton);
+        analysisPane.add(visualiseButton);
 
         this.add(analysisPane);
         //text area for result
         JPanel resPane = new JPanel();
         resPane.setLayout(new BoxLayout(resPane, BoxLayout.Y_AXIS));
-
         resultArea = new JTextArea();
         resultArea.setFont(new Font("Century Gothic", Font.PLAIN, 12));
         resultArea.setEditable(false);

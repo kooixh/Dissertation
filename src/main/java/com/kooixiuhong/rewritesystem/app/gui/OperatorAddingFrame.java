@@ -30,14 +30,13 @@ public class OperatorAddingFrame extends JFrame {
      */
     public OperatorAddingFrame(HomeScreen homeScreen) {
 
-        typeMap = new HashMap<>();
+        this.home = homeScreen;
 
+        typeMap = new HashMap<>();
         typeMap.put("INT", DataType.INT);
         typeMap.put("NAT", DataType.NAT);
         typeMap.put("STRING", DataType.STRING);
         typeMap.put("BOOLEAN", DataType.BOOLEAN);
-
-        home = homeScreen;
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
@@ -46,14 +45,10 @@ public class OperatorAddingFrame extends JFrame {
         });
 
 
-        //Add operator button
         addBtn = new JButton("Add");
         addBtn.addActionListener(e -> {
-
-
             String symbol = symbolField.getText();
             String precedenceField = this.precedenceField.getText();
-
             if (symbol.equals("") || precedenceField.equals("")) {
                 JOptionPane.showMessageDialog(OperatorAddingFrame.this, "Field cannot be empty.",
                         "Missing values", JOptionPane.ERROR_MESSAGE);
@@ -67,7 +62,6 @@ public class OperatorAddingFrame extends JFrame {
                     int precedence = Integer.parseInt(precedenceField);
                     if (precedence <= 0) {
                         JOptionPane.showMessageDialog(OperatorAddingFrame.this, "Precedence must be a number greater than 0.", "Invalid values", JOptionPane.ERROR_MESSAGE);
-
                     } else {
                         Operator operator;
                         if (opType.getSelectedIndex() == 0) {
@@ -75,7 +69,6 @@ public class OperatorAddingFrame extends JFrame {
                         } else {
                             operator = new BinaryOperator(symbol, precedence, typeMap.get(opRetType.getSelectedItem()));
                         }
-
                         home.getSignature().addOperator(operator);
                         home.updateUI();
                         OperatorAddingFrame.this.dispose();
@@ -95,7 +88,6 @@ public class OperatorAddingFrame extends JFrame {
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         setContentPane(contentPane);
 
-
         //panel for symbol text field
         JPanel panelSymbol = new JPanel();
         panelSymbol.setLayout(new BoxLayout(panelSymbol, BoxLayout.X_AXIS));
@@ -107,41 +99,38 @@ public class OperatorAddingFrame extends JFrame {
         panelSymbol.add(symLab);
         panelSymbol.add(symbolField);
 
-
         //panel for operator type
         JPanel panelType = new JPanel();
         panelType.setLayout(new BoxLayout(panelType, BoxLayout.X_AXIS));
         JLabel typeLab = new JLabel("Operator type");
         typeLab.setFont(new Font("Century Gothic", Font.PLAIN, 14));
 
-        String[] ops = { "Unary", "Binary" };
-        opType = new JComboBox(ops);
+        String[] operators = { "Unary", "Binary" };
+        opType = new JComboBox(operators);
         opType.setMaximumSize(opType.getPreferredSize());
         panelType.add(typeLab);
         panelType.add(opType);
 
 
         //panel for precedence
-
         JPanel precedencePanel = new JPanel();
         precedencePanel.setLayout(new BoxLayout(precedencePanel, BoxLayout.X_AXIS));
-        JLabel precLab = new JLabel("Operator precedence");
-        precLab.setFont(new Font("Century Gothic", Font.PLAIN, 14));
+        JLabel precedenceLabel = new JLabel("Operator precedence");
+        precedenceLabel.setFont(new Font("Century Gothic", Font.PLAIN, 14));
         precedenceField = new JTextField(10);
         precedenceField.setMaximumSize(precedenceField.getPreferredSize());
-        precedencePanel.add(precLab);
+        precedencePanel.add(precedenceLabel);
         precedencePanel.add(precedenceField);
 
 
         //panel for return type
-
         JPanel returnTypePanel = new JPanel();
         returnTypePanel.setLayout(new BoxLayout(returnTypePanel, BoxLayout.X_AXIS));
-        JLabel rtLab = new JLabel("Return type");
-        rtLab.setFont(new Font("Century Gothic", Font.PLAIN, 14));
+        JLabel returnTypeLabel = new JLabel("Return type");
+        returnTypeLabel.setFont(new Font("Century Gothic", Font.PLAIN, 14));
         opRetType = new JComboBox(typeMap.keySet().toArray());
         opRetType.setMaximumSize(opRetType.getPreferredSize());
-        returnTypePanel.add(rtLab);
+        returnTypePanel.add(returnTypeLabel);
         returnTypePanel.add(opRetType);
 
         contentPane.add(panelSymbol);

@@ -86,11 +86,11 @@ public class SearchTreeVisualisationFrame extends JFrame {
                             StringBuilder sb = new StringBuilder();
 
                             sb.append("Current state: ")
-                                    .append(home.getParser().toInfix(home.getParser().postOrderTreverse(selNode.getTermNode())))
+                                    .append(home.getParser().toInfix(home.getParser().postOrderTraversal(selNode.getTermNode())))
                                     .append("\n");
                             sb.append("Applied: ").append(selNode.getPrevRule()).append(" on \n");
                             sb.append("Previous state: ")
-                                    .append(home.getParser().toInfix(home.getParser().postOrderTreverse(selNode.getParentNode().getTermNode())))
+                                    .append(home.getParser().toInfix(home.getParser().postOrderTraversal(selNode.getParentNode().getTermNode())))
                                     .append("\n");
 
                             JOptionPane.showMessageDialog(null, sb.toString());
@@ -119,7 +119,7 @@ public class SearchTreeVisualisationFrame extends JFrame {
 
     private void buildGraph() throws ParseException {
         mxICell graphRoot = (mxICell) graph.insertVertex(parent, null,
-                home.getParser().toInfix(home.getParser().postOrderTreverse(root.getTermNode())), 250, 250,
+                home.getParser().toInfix(home.getParser().postOrderTraversal(root.getTermNode())), 250, 250,
                 80, 30);
         graph.updateCellSize(graphRoot);
         buildGraphUtil(root, graphRoot, 1);
@@ -128,7 +128,7 @@ public class SearchTreeVisualisationFrame extends JFrame {
     //build the graph using a depth first search
     private void buildGraphUtil(SearchNode sNode, mxICell currentCell, int depth) throws ParseException {
         for (SearchNode node : sNode.getChildNodes()) {
-            mxICell child = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTreverse(node.getTermNode())), 0, 0, 80, 30);
+            mxICell child = (mxICell) graph.insertVertex(parent, null, home.getParser().toInfix(home.getParser().postOrderTraversal(node.getTermNode())), 0, 0, 80, 30);
             mapping.put(child, node);
 
             //insert edge then go further down
