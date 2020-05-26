@@ -280,7 +280,7 @@ public class RewriteEngine implements Serializable {
     private boolean checkTerm(Node node) {
         if (node == null)
             return true;
-        if (node.getNodeType() == NodeType.VARIABLE)
+        if (node.getNodeType().equals(NodeType.VARIABLE))
             return false;
         return (checkTerm(node.getLeft())) && checkTerm(node.getRight());
     }
