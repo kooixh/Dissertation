@@ -8,7 +8,6 @@ package com.kooixiuhong.rewritesystem.app.syntaxtree;
  */
 public class BinaryOperator extends AbstractOperator {
 
-    //Constructor
     public BinaryOperator(String symbol, int precedence, DataType returnType) {
         super(symbol, precedence, returnType);
     }

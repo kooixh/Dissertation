@@ -17,15 +17,12 @@ import java.util.Set;
  */
 public class Signature implements Serializable {
 
-
     private Map<String, Operator> operators;
     private Map<String, DataType> variables;
-
 
     //constructors
     public Signature(Set<Operator> ops, Map<String, DataType> vars) {
         this.operators = new HashMap<>();
-
         for (Operator o : ops) {
             operators.put(o.getSymbol(), o);
         }

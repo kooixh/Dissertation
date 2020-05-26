@@ -18,6 +18,6 @@ public abstract class AbstractOperator implements Operator, Serializable {
     protected int precedence;
     protected DataType returnType;
 
-    public abstract int comparePrecedence(Operator op);
+    public abstract int comparePrecedence(Operator operator);
 
 }

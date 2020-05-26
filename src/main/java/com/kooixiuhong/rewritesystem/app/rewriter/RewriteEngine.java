@@ -29,18 +29,15 @@ public class RewriteEngine implements Serializable {
     @Getter private Set<RewriteRule> rules;
     private Map<String, List<RewriteRule>> ruleMap;
     private ASTParser parser;
-
-    private final static int MAX_ITERATION = 100;
+    private static final int MAX_ITERATION = 100;
 
     public RewriteEngine(Set<RewriteRule> rules, ASTParser parser) {
         this.parser = parser;
         this.rules = rules;
         ruleMap = new HashMap<>();
-
         for (RewriteRule rule : this.rules) {
             if (!ruleMap.containsKey(rule.getLhs().getValue())) {
                 ruleMap.put(rule.getLhs().getValue(), new ArrayList<>());
-
             }
             ruleMap.get(rule.getLhs().getValue()).add(rule);
         }
@@ -62,7 +59,6 @@ public class RewriteEngine implements Serializable {
 
     public void deleteRule(RewriteRule rule) {
         rules.remove(rule);
-
         List<RewriteRule> list = ruleMap.get(rule.getLhs().getValue());
         list.remove(rule);
     }
@@ -77,7 +73,7 @@ public class RewriteEngine implements Serializable {
      * @throws RewriteException
      */
     public String rewritePostfix(String input) throws ParseException, RewriteException {
-        return parser.postOrderTreverse(rewriteNode(input));
+        return parser.postOrderTraversal(rewriteNode(input));
     }
 
     /**
@@ -92,7 +88,6 @@ public class RewriteEngine implements Serializable {
     public Node rewriteNode(String infix) throws ParseException, RewriteException {
 
         int count = 0; //total iteration, prevents infinite
-
         Node root = parser.parseAST(infix);
         if (!checkTerm(root))
             throw new RewriteException("Term to rewrite cannot contain declared variable.");
@@ -128,7 +123,6 @@ public class RewriteEngine implements Serializable {
         do {
             lastRule = new StringBuilder();
             flag = search(root, lastRule);
-
             //skips the final step
             if (flag) {
                 RewriteStep step = new RewriteStep(copy(root), lastRule.toString());
@@ -235,7 +229,6 @@ public class RewriteEngine implements Serializable {
                 return false;
             }
         } else { //if rule is not a variable then must match symbol
-
             if (term.getNodeType() == NodeType.VARIABLE) {
                 throw new RewriteException("Term to rewrite cannot contain declared variable.");
             }
@@ -259,63 +252,60 @@ public class RewriteEngine implements Serializable {
         swap(term, vars);
     }
 
-
     //function to swap the node with the variable node
-    private void swap(Node m, Map<String, Node> vars) {
-        if (m == null)
+    private void swap(Node node, Map<String, Node> vars) {
+        if (node == null)
             return;
         //check node value is a variable
-        if (vars.containsKey(m.getValue())) {
-            String initialValue = m.getValue();
+        if (vars.containsKey(node.getValue())) {
+            String initialValue = node.getValue();
             //set the respective node
-            ((ASTNode) m).setValue(vars.get(initialValue).getValue());
-            ((ASTNode) m).setNodeType(vars.get(initialValue).getNodeType());
-            ((ASTNode) m).setType(vars.get(initialValue).getType());
-            ((ASTNode) m).setRight(copy(vars.get(initialValue).getRight()));
-            ((ASTNode) m).setLeft(copy(vars.get(initialValue).getLeft()));
+            ((ASTNode) node).setValue(vars.get(initialValue).getValue());
+            ((ASTNode) node).setNodeType(vars.get(initialValue).getNodeType());
+            ((ASTNode) node).setType(vars.get(initialValue).getType());
+            ((ASTNode) node).setRight(copy(vars.get(initialValue).getRight()));
+            ((ASTNode) node).setLeft(copy(vars.get(initialValue).getLeft()));
         }
-        swap(m.getLeft(), vars);
-        swap(m.getRight(), vars);
+        swap(node.getLeft(), vars);
+        swap(node.getRight(), vars);
     }
 
-
     //copy function to copy one node into a new instance
-    public Node copy(Node n) {
-        if (n == null)
+    public Node copy(Node node) {
+        if (node == null)
             return null;
-        return new ASTNode(n.getValue(), copy(n.getLeft()), copy(n.getRight()), n.getType(), n.getNodeType());
+        return new ASTNode(node.getValue(), copy(node.getLeft()), copy(node.getRight()), node.getType(), node.getNodeType());
 
     }
 
     //this method checks that a term is well formed
-    private boolean checkTerm(Node n) {
-        if (n == null)
+    private boolean checkTerm(Node node) {
+        if (node == null)
             return true;
-        if (n.getNodeType() == NodeType.VARIABLE)
+        if (node.getNodeType() == NodeType.VARIABLE)
             return false;
-        return (checkTerm(n.getLeft())) && checkTerm(n.getRight());
+        return (checkTerm(node.getLeft())) && checkTerm(node.getRight());
     }
 
     //use a post-order traversal to search the syntax tree for matching rule
     //root keeps a reference to the original root so we can swap when we make a copy
-    private boolean search(Node n, StringBuilder rName) throws RewriteException {
-
-        if (n == null)
+    private boolean search(Node node, StringBuilder ruleName) throws RewriteException {
+        if (node == null)
             return false;
         //if something is rewritten don't rewrite further
-        if (search(n.getLeft(), rName))
+        if (search(node.getLeft(), ruleName))
             return true;
-        if (search(n.getRight(), rName))
+        if (search(node.getRight(), ruleName))
             return true;
         //try all the possible rule that can be match
-        if (ruleMap.get(n.getValue()) == null)
+        if (ruleMap.get(node.getValue()) == null)
             return false;
-        for (RewriteRule r : ruleMap.get(n.getValue())) {
+        for (RewriteRule r : ruleMap.get(node.getValue())) {
             Map<String, Node> vars = new HashMap<>();
-            if (match(n, r.getLhs(), vars)) {
-                substitute(n, r.getRhs(), vars);
-                if (rName != null)
-                    rName.append(r.getName());
+            if (match(node, r.getLhs(), vars)) {
+                substitute(node, r.getRhs(), vars);
+                if (ruleName != null)
+                    ruleName.append(r.getName());
                 return true;
             }
         }

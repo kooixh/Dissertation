@@ -420,7 +420,7 @@ public class ParserTest {
         String infix = "3+4";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "3 4 +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -428,7 +428,7 @@ public class ParserTest {
         String infix = "3+4+2";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "3 4 + 2 +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -436,7 +436,7 @@ public class ParserTest {
         String infix = "3+4*2";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "3 4 2 * +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -444,7 +444,7 @@ public class ParserTest {
         String infix = "(13+4)*2";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "13 4 + 2 *";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -452,7 +452,7 @@ public class ParserTest {
         String infix = "3+4+2";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "3 4 + 2 +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -460,7 +460,7 @@ public class ParserTest {
         String infix = "1+10*(2+2)+(2-1)";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "1 10 2 2 + * + 2 1 - +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -468,7 +468,7 @@ public class ParserTest {
         String infix = "2*((3+2)-1)";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "2 3 2 + 1 - *";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
 
     }
 
@@ -477,7 +477,7 @@ public class ParserTest {
         String infix = "True + False -(True + True)";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "True False + True True + -";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -485,7 +485,7 @@ public class ParserTest {
         String infix = "True + False -(True + (False - False)) + True + True";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "True False + True False False - + - True + True +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -493,7 +493,7 @@ public class ParserTest {
         String infix = "!!True";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "True ! !";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
     @Test
@@ -501,7 +501,7 @@ public class ParserTest {
         String infix = "True + (!!True)";
         Node astRoot = parser.parseAST(infix);
         String expectedPostFix = "True True ! ! +";
-        assertEquals(expectedPostFix, parser.postOrderTreverse(astRoot));
+        assertEquals(expectedPostFix, parser.postOrderTraversal(astRoot));
     }
 
 

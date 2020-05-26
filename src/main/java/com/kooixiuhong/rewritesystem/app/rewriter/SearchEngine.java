@@ -45,15 +45,13 @@ public class SearchEngine {
     }
 
     //use a bounded dfs to search for a match
-    private SearchNode searchUtil(SearchNode searchRoot, Node root, int bound, int curB) {
-        //out of bounds
-        if (curB > bound)
+    private SearchNode searchUtil(SearchNode searchRoot, Node root, int bound, int currentBound) {
+        if (currentBound > bound)
             return null;
         if (searchRoot.getTermNode().equals(root))
             return searchRoot;
-        //continue
         for (SearchNode s : searchRoot.getChildNodes()) {
-            SearchNode next = searchUtil(s, root, bound, curB + 1);
+            SearchNode next = searchUtil(s, root, bound, currentBound + 1);
             if (next != null)
                 return next;
         }
@@ -61,18 +59,18 @@ public class SearchEngine {
     }
 
     //use a bounded dfs to build a search tree
-    private void buildUtil(SearchNode searchRoot, int bound, int curB) throws RewriteException {
-        if (curB > bound)
+    private void buildUtil(SearchNode searchRoot, int bound, int currentBound) throws RewriteException {
+        if (currentBound > bound)
             return;
         //apply all possible rule on current node and add as child
-        for (RewriteRule r : engine.getRules()) {
+        for (RewriteRule rule : engine.getRules()) {
             Node copyOfTerm = engine.copy(searchRoot.getTermNode());
-            if (engine.singleSearch(copyOfTerm, r))
-                searchRoot.addChild(new SearchNode(copyOfTerm, searchRoot, r.getName()));
+            if (engine.singleSearch(copyOfTerm, rule))
+                searchRoot.addChild(new SearchNode(copyOfTerm, searchRoot, rule.getName()));
         }
         //dfs children
-        for (SearchNode c : searchRoot.getChildNodes()) {
-            buildUtil(c, bound, curB + 1);
+        for (SearchNode node : searchRoot.getChildNodes()) {
+            buildUtil(node, bound, currentBound + 1);
         }
     }
 

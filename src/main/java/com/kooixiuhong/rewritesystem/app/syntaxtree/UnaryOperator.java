@@ -20,8 +20,8 @@ public class UnaryOperator extends AbstractOperator {
      * @return 1 is current operator has higher precedence, 0 if equal, -1 is lower
      */
     @Override
-    public int comparePrecedence(Operator op) {
-        return (op instanceof BinaryOperator) ? 1 : Integer.compare(this.precedence, op.getPrecedence());
+    public int comparePrecedence(Operator operator) {
+        return (operator instanceof BinaryOperator) ? 1 : Integer.compare(this.precedence, operator.getPrecedence());
     }
 
 }

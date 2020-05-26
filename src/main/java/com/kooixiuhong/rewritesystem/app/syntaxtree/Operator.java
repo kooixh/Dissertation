@@ -8,7 +8,7 @@ package com.kooixiuhong.rewritesystem.app.syntaxtree;
  * @date 29th January 2019
  */
 public interface Operator {
-    int comparePrecedence(Operator op);
+    int comparePrecedence(Operator operator);
     DataType getReturnType();
     int getPrecedence();
     String getSymbol();

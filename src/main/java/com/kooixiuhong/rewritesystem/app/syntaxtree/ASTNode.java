@@ -13,7 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class ASTNode implements Node {
-    //fields
+
     protected String value;
     protected Node left;
     protected Node right;
@@ -24,55 +24,13 @@ public class ASTNode implements Node {
         this.value = value;
         this.type = type;
         this.nodeType = nodeType;
-        left = null;
-        right = null;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public void setType(DataType type) {
-        this.type = type;
-    }
-
-    public NodeType getNodeType() {
-        return nodeType;
-    }
-
-    public void setNodeType(NodeType nodeType) {
-        this.nodeType = nodeType;
-    }
-
-    //getters and setters
-    public void setRight(Node right) {
-        this.right = right;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Node getLeft() {
-        return left;
-    }
-
-    public void setLeft(Node left) {
-        this.left = left;
-    }
-
-    public Node getRight() {
-        return right;
+        this.left = null;
+        this.right = null;
     }
 
     @Override
     public String toString() {
         return this.getValue() + "(" + this.getNodeType() + "):" + this.getType();
     }
-
 
 }
